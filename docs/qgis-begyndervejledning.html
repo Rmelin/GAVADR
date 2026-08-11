@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Trin-for-trin QGIS-vejledning til kortdata i GAVADR Vandværk.">
+  <title>QGIS for begyndere | GAVADR Vandværk</title>
+  <style>
+    :root {
+      --ink: #172522;
+      --muted: #5b6b67;
+      --paper: #fbfaf5;
+      --surface: #ffffff;
+      --navy: #123f43;
+      --teal: #087f75;
+      --teal-soft: #dff3ee;
+      --gold: #d79a28;
+      --gold-soft: #fff3d4;
+      --red: #a33636;
+      --red-soft: #fbe8e5;
+      --line: #d7dfdb;
+      --shadow: 0 14px 40px rgba(18, 63, 67, .09);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 17px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: var(--teal); text-underline-offset: .16em; }
+    a:hover { color: var(--navy); }
+    code, kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .9em;
+    }
+    code { padding: .12rem .35rem; border-radius: .3rem; background: #edf1ef; }
+    kbd { padding: .12rem .4rem; border: 1px solid #b9c5c0; border-bottom-width: 2px; border-radius: .3rem; background: #fff; }
+    h1, h2, h3 { line-height: 1.2; color: var(--navy); }
+    h1 { max-width: 760px; margin: .3rem 0 1rem; font-size: clamp(2.35rem, 6vw, 4.8rem); letter-spacing: -.055em; }
+    h2 { margin: 0 0 1rem; font-size: clamp(1.7rem, 3vw, 2.45rem); letter-spacing: -.025em; }
+    h3 { margin: 1.8rem 0 .6rem; font-size: 1.25rem; }
+    p { margin: .6rem 0 1rem; }
+    ul, ol { padding-left: 1.35rem; }
+    li + li { margin-top: .45rem; }
+
+    .skip-link { position: fixed; top: -5rem; left: 1rem; z-index: 20; padding: .7rem 1rem; color: #fff; background: var(--navy); }
+    .skip-link:focus { top: 1rem; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 5rem max(1.5rem, calc((100vw - 1160px) / 2)) 4rem;
+      color: #fff;
+      background: var(--navy);
+    }
+    .hero::after {
+      position: absolute;
+      right: -8rem;
+      bottom: -12rem;
+      width: 38rem;
+      height: 38rem;
+      border: 6rem solid rgba(255,255,255,.055);
+      border-radius: 50%;
+      content: "";
+    }
+    .hero h1, .hero p { position: relative; z-index: 1; color: #fff; }
+    .hero p { max-width: 690px; font-size: 1.14rem; color: #dcebea; }
+    .eyebrow { font-size: .82rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #83d5c8; }
+    .hero-meta { display: flex; position: relative; z-index: 1; flex-wrap: wrap; gap: .6rem; margin-top: 1.7rem; }
+    .hero-meta span { padding: .4rem .75rem; border: 1px solid rgba(255,255,255,.25); border-radius: 2rem; font-size: .88rem; }
+
+    .layout { display: grid; grid-template-columns: 270px minmax(0, 820px); gap: 3rem; max-width: 1160px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+    .toc { position: sticky; top: 1rem; align-self: start; padding: 1.25rem; border: 1px solid var(--line); border-radius: .8rem; background: rgba(255,255,255,.8); backdrop-filter: blur(10px); }
+    .toc strong { display: block; margin-bottom: .6rem; color: var(--navy); }
+    .toc ol { margin: 0; padding-left: 1.2rem; font-size: .91rem; }
+    .toc li + li { margin-top: .25rem; }
+    main { min-width: 0; }
+    section { margin-bottom: 2rem; padding: clamp(1.4rem, 4vw, 2.6rem); border: 1px solid var(--line); border-radius: 1rem; background: var(--surface); box-shadow: var(--shadow); scroll-margin-top: 1rem; }
+    .section-number { display: inline-grid; width: 2.2rem; height: 2.2rem; margin-bottom: .9rem; place-items: center; border-radius: 50%; color: #fff; background: var(--teal); font-weight: 800; }
+    .lead { color: var(--muted); font-size: 1.07rem; }
+    .steps { margin: 1.2rem 0; padding-left: 0; list-style: none; counter-reset: steps; }
+    .steps > li { position: relative; min-height: 3rem; padding: .2rem 0 1.3rem 3.4rem; counter-increment: steps; }
+    .steps > li::before { position: absolute; left: 0; top: 0; display: grid; width: 2.35rem; height: 2.35rem; place-items: center; border-radius: 50%; color: var(--navy); background: var(--teal-soft); content: counter(steps); font-weight: 800; }
+    .steps > li::after { position: absolute; left: 1.14rem; top: 2.5rem; bottom: 0; width: 2px; background: var(--teal-soft); content: ""; }
+    .steps > li:last-child::after { display: none; }
+
+    .callout { margin: 1.25rem 0; padding: 1rem 1.15rem; border-left: .35rem solid var(--teal); border-radius: .35rem; background: var(--teal-soft); }
+    .callout strong { color: var(--navy); }
+    .callout.warning { border-color: var(--gold); background: var(--gold-soft); }
+    .callout.danger { border-color: var(--red); background: var(--red-soft); }
+    .command { overflow-x: auto; margin: 1rem 0; padding: 1rem 1.2rem; border-radius: .6rem; color: #e5f6f2; background: #102d30; white-space: pre; }
+    .command code { padding: 0; color: inherit; background: transparent; }
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin: 1.2rem 0; }
+    .field { padding: .9rem; border: 1px solid var(--line); border-radius: .55rem; background: #fafcfb; }
+    .field code { display: inline-block; margin-bottom: .25rem; color: var(--navy); background: var(--teal-soft); font-weight: 700; }
+    .field span { display: block; color: var(--muted); font-size: .92rem; }
+    .mini-map { position: relative; min-height: 225px; overflow: hidden; margin: 1.5rem 0; border: 1px solid #b6c8c2; border-radius: .75rem; background-color: #edf0df; background-image: linear-gradient(32deg, transparent 47%, #c7d5c9 48%, #c7d5c9 52%, transparent 53%), linear-gradient(108deg, transparent 47%, #dbe2d3 48%, #dbe2d3 52%, transparent 53%); }
+    .mini-map .pipe { position: absolute; left: 7%; top: 52%; width: 86%; height: 8px; border-radius: 1rem; background: #2176ae; transform: rotate(-8deg); }
+    .mini-map .valve { position: absolute; left: 50%; top: 46%; width: 22px; height: 22px; border: 5px solid #fff; border-radius: 50%; background: #d85434; box-shadow: 0 1px 7px rgba(0,0,0,.28); }
+    .mini-map .address { position: absolute; left: 68%; top: 25%; width: 16px; height: 16px; border: 3px solid #fff; border-radius: 50% 50% 50% 0; background: #7b3f98; transform: rotate(-45deg); }
+    .mini-map .address::after { display: block; width: 5px; height: 5px; margin: 2.5px; border-radius: 50%; background: #fff; content: ""; }
+    .mini-map .legend { position: absolute; left: 1rem; bottom: 1rem; padding: .45rem .7rem; border-radius: .35rem; background: rgba(255,255,255,.9); font-size: .78rem; }
+    table { width: 100%; margin: 1rem 0; border-collapse: collapse; font-size: .94rem; }
+    th, td { padding: .7rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--navy); background: #f0f5f3; }
+    .checklist { padding-left: 0; list-style: none; }
+    .checklist li { position: relative; padding-left: 1.8rem; }
+    .checklist li::before { position: absolute; left: 0; color: var(--teal); content: "□"; font-size: 1.2rem; font-weight: 800; }
+    footer { padding: 2rem 1.5rem; color: #dcebea; text-align: center; background: var(--navy); }
+
+    @media (max-width: 850px) {
+      .layout { display: block; padding-top: 1.5rem; }
+      .toc { position: static; margin-bottom: 1.5rem; }
+      .field-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      body { font-size: 16px; }
+      .hero { padding-top: 3rem; }
+      section { border-radius: .7rem; }
+      table { display: block; overflow-x: auto; }
+    }
+    @media print {
+      body { background: #fff; font-size: 11pt; }
+      .hero { padding: 2rem; color: #000; background: #fff; border-bottom: 2px solid #000; }
+      .hero h1, .hero p, .eyebrow { color: #000; }
+      .hero-meta, .toc, .skip-link { display: none; }
+      .layout { display: block; max-width: none; padding: 1rem 0; }
+      section { break-inside: avoid; margin: 0 0 1rem; padding: 1rem; box-shadow: none; }
+      a { color: #000; text-decoration: none; }
+      footer { color: #000; background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#indhold">Gå til indhold</a>
+
+  <header class="hero">
+    <span class="eyebrow">GAVADR Vandværk · praktisk vejledning</span>
+    <h1>QGIS for begyndere</h1>
+    <p>En trin-for-trin-guide til at forbinde QGIS med GAVADR, oprette adresser og kortobjekter og kontrollere resultatet i websystemet.</p>
+    <div class="hero-meta">
+      <span>Ingen GIS-erfaring nødvendig</span>
+      <span>QGIS Long Term Release</span>
+      <span>EPSG:25832</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Indholdsfortegnelse">
+      <strong>Indhold</strong>
+      <ol>
+        <li><a href="#overblik">Forstå systemet</a></li>
+        <li><a href="#start">Start GAVADR</a></li>
+        <li><a href="#installer">Installér QGIS</a></li>
+        <li><a href="#bruger">Opret QGIS-bruger</a></li>
+        <li><a href="#forbind">Forbind databasen</a></li>
+        <li><a href="#lag">Tilføj kortlag</a></li>
+        <li><a href="#navigation">Find rundt i QGIS</a></li>
+        <li><a href="#adresse">Opret en adresse</a></li>
+        <li><a href="#import">Importér adresser</a></li>
+        <li><a href="#net">Andre kortobjekter</a></li>
+        <li><a href="#relationer">Kobl data sammen</a></li>
+        <li><a href="#kontrol">Kontrollér resultatet</a></li>
+        <li><a href="#fejl">Fejlfinding</a></li>
+      </ol>
+    </nav>
+
+    <main id="indhold">
+      <section id="overblik">
+        <span class="section-number">1</span>
+        <h2>Forstå systemet</h2>
+        <p class="lead">QGIS er redigeringsværktøjet. GAVADR-websiden er stedet, hvor medarbejderne ser dataene og bruger dem i driften.</p>
+        <div class="mini-map" role="img" aria-label="Forenklet kort med ledning, hane og adresse">
+          <span class="pipe"></span><span class="valve"></span><span class="address"></span>
+          <span class="legend">Blå: ledning · Rød: hane · Lilla: adresse</span>
+        </div>
+        <p>Når du gemmer i QGIS, skriver du direkte til GAVADR-databasen. Ændringen bliver synlig på webkortet efter en genindlæsning.</p>
+        <div class="callout danger"><strong>Vigtigt:</strong> QGIS har ingen almindelig fortryd-knap, efter ændringer er gemt i databasen. Tag backup, arbejd i små portioner, og kontrollér hver portion.</div>
+      </section>
+
+      <section id="start">
+        <span class="section-number">2</span>
+        <h2>Start GAVADR</h2>
+        <p>I udviklingsmiljøet åbner du Terminal, går til projektmappen og kører:</p>
+        <pre class="command"><code>docker compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml up --build -d
+docker compose --env-file .env.dev -f docker-compose.yml -f docker-compose.dev.yml ps</code></pre>
+        <p>Kontrollér, at <code>db</code>, <code>backend</code> og <code>frontend</code> står som <code>healthy</code>. Åbn derefter <a href="http://localhost:8080/kort">http://localhost:8080/kort</a>.</p>
+        <div class="callout"><strong>I produktion:</strong> Brug vandværkets godkendte startprocedure og netværksforbindelse. Databaseadgangen må ikke åbnes mod internettet.</div>
+      </section>
+
+      <section id="installer">
+        <span class="section-number">3</span>
+        <h2>Installér QGIS</h2>
+        <ol class="steps">
+          <li>Gå til <a href="https://qgis.org/download/" rel="noreferrer">qgis.org/download</a>.</li>
+          <li>Vælg den aktuelle <strong>Long Term Release</strong>. Den er normalt det sikreste valg til drift.</li>
+          <li>Installér programmet med standardindstillingerne.</li>
+          <li>Åbn QGIS. Et tomt projekt er helt normalt.</li>
+        </ol>
+        <p>Du behøver ikke installere ekstra QGIS-plugins til den grundlæggende arbejdsgang.</p>
+      </section>
+
+      <section id="bruger">
+        <span class="section-number">4</span>
+        <h2>Opret en sikker QGIS-bruger</h2>
+        <p>Kør dette én gang fra projektets rodmappe:</p>
+        <pre class="command"><code>./scripts/create_qgis_user.sh</code></pre>
+        <p>Scriptet opretter brugeren <code>qgis_editor</code> og beder dig vælge en adgangskode. Adgangskoden bliver ikke gemt i projektet.</p>
+        <div class="callout warning"><strong>Husk adgangskoden.</strong> Den skal bruges i næste trin. Del den ikke i mail, dokumentation eller skærmbilleder.</div>
+      </section>
+
+      <section id="forbind">
+        <span class="section-number">5</span>
+        <h2>Forbind QGIS med databasen</h2>
+        <ol class="steps">
+          <li>Find panelet <strong>Browser</strong> i venstre side. Mangler det, vælg <strong>Vis → Paneler → Browser</strong>.</li>
+          <li>Højreklik på <strong>PostgreSQL</strong>, og vælg <strong>Ny forbindelse</strong>.</li>
+          <li>Udfyld felterne som vist nedenfor.</li>
+          <li>Klik <strong>Test forbindelse</strong>.</li>
+          <li>Klik <strong>OK</strong>, når testen lykkes.</li>
+        </ol>
+        <div class="field-grid">
+          <div class="field"><code>Navn</code><span>GAVADR udvikling</span></div>
+          <div class="field"><code>Vært</code><span>127.0.0.1</span></div>
+          <div class="field"><code>Port</code><span>5432</span></div>
+          <div class="field"><code>Database</code><span>gavadr</span></div>
+          <div class="field"><code>Brugernavn</code><span>qgis_editor</span></div>
+          <div class="field"><code>Adgangskode</code><span>Den adgangskode, du lige valgte</span></div>
+        </div>
+        <p>I produktion får du vært, database og netværksadgang af den systemansvarlige. Brug kun lokalt netværk eller VPN.</p>
+      </section>
+
+      <section id="lag">
+        <span class="section-number">6</span>
+        <h2>Tilføj kortlagene</h2>
+        <ol class="steps">
+          <li>Udvid <strong>PostgreSQL → GAVADR udvikling → public</strong> i Browser-panelet.</li>
+          <li>Dobbeltklik på <code>addresses</code>, <code>pipes</code>, <code>valves</code> og <code>closure_areas</code>.</li>
+          <li>Lagene vises nu i panelet <strong>Lag</strong>.</li>
+          <li>Højreklik på et lag, vælg <strong>Egenskaber → Information</strong>, og bekræft <strong>EPSG:25832</strong>.</li>
+          <li>Gem QGIS-projektet som en <code>.qgz</code>-fil på et godkendt sted.</li>
+        </ol>
+        <table>
+          <thead><tr><th>Lag</th><th>Indhold</th><th>Geometri</th></tr></thead>
+          <tbody>
+            <tr><td><code>addresses</code></td><td>Forsynede adresser</td><td>Punkt</td></tr>
+            <tr><td><code>pipes</code></td><td>Hoved- og stikledninger</td><td>Linje</td></tr>
+            <tr><td><code>valves</code></td><td>Haner og ventiler</td><td>Punkt</td></tr>
+            <tr><td><code>closure_areas</code></td><td>Områder berørt ved lukning</td><td>Multipolygon</td></tr>
+          </tbody>
+        </table>
+        <h3>Valgfrit baggrundskort</h3>
+        <p>Udvid <strong>XYZ Tiles</strong> i Browser-panelet, og dobbeltklik på <strong>OpenStreetMap</strong>. Brug kun kortet som visuel reference, ikke som præcis dokumentation for jordlagte installationer.</p>
+      </section>
+
+      <section id="navigation">
+        <span class="section-number">7</span>
+        <h2>Find rundt i QGIS</h2>
+        <div class="field-grid">
+          <div class="field"><code>Musehjul</code><span>Zoom ind og ud</span></div>
+          <div class="field"><code>Mellemrum + træk</code><span>Flyt rundt på kortet</span></div>
+          <div class="field"><code>Identificér</code><span>Klik på et objekt og se dets oplysninger</span></div>
+          <div class="field"><code>Attributtabel</code><span>Se alle rækker i et lag</span></div>
+          <div class="field"><code>Blyant</code><span>Slå redigering til eller fra</span></div>
+          <div class="field"><code>Diskette</code><span>Gem lagets ændringer</span></div>
+        </div>
+        <div class="callout"><strong>God vane:</strong> Markér altid det rigtige lag i Lag-panelet, før du tegner eller redigerer. Slå kun redigering til på ét lag ad gangen.</div>
+      </section>
+
+      <section id="adresse">
+        <span class="section-number">8</span>
+        <h2>Opret din første adresse</h2>
+        <ol class="steps">
+          <li>Markér laget <code>addresses</code> i Lag-panelet.</li>
+          <li>Klik på blyanten for at slå redigering til.</li>
+          <li>Vælg værktøjet <strong>Tilføj punktobjekt</strong>.</li>
+          <li>Klik på den dokumenterede adresseposition på kortet.</li>
+          <li>Udfyld formularen med felterne nedenfor.</li>
+          <li>Klik <strong>OK</strong>, gem med disketteikonet, og slå redigering fra.</li>
+        </ol>
+        <table>
+          <thead><tr><th>Felt</th><th>Hvad skriver du?</th><th>Eksempel</th></tr></thead>
+          <tbody>
+            <tr><td><code>external_address_id</code></td><td>Unikt ID fra kilden, hvis det findes</td><td>DAR-001</td></tr>
+            <tr><td><code>street_name</code></td><td>Vejnavn</td><td>Gadeledsvej</td></tr>
+            <tr><td><code>house_number</code></td><td>Nummer inklusive bogstav</td><td>66A</td></tr>
+            <tr><td><code>postal_code</code></td><td>Præcis fire tegn</td><td>4293</td></tr>
+            <tr><td><code>city</code></td><td>Bynavn</td><td>Dianalund</td></tr>
+            <tr><td><code>active</code></td><td>Aktiv adresse</td><td>true</td></tr>
+            <tr><td><code>notes</code></td><td>Valgfri note uden persondata</td><td>Kontrolleret 2026-08-08</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warning"><strong>Udfyld ikke</strong> <code>id</code>, <code>created_at</code>, <code>updated_at</code>, <code>updated_by</code> eller <code>deleted_at</code>. Databasen håndterer disse felter.</div>
+      </section>
+
+      <section id="import">
+        <span class="section-number">9</span>
+        <h2>Importér mange adresser fra CSV</h2>
+        <p class="lead">Start altid med 5-10 adresser. Kontrollér dem, før du importerer resten.</p>
+        <p>En enkel CSV kan se sådan ud:</p>
+        <pre class="command"><code>external_address_id;street_name;house_number;postal_code;city;x;y;active
+DAR-001;Gadeledsvej;66A;4293;Dianalund;654930.12;6169200.45;true</code></pre>
+        <ol class="steps">
+          <li>Vælg <strong>Lag → Tilføj lag → Tilføj afgrænset tekstlag</strong>.</li>
+          <li>Vælg CSV-filen og semikolon som skilletegn.</li>
+          <li>Vælg <code>x</code> som X-felt og <code>y</code> som Y-felt.</li>
+          <li>Vælg filens faktiske koordinatsystem. Brug kun EPSG:25832, hvis koordinaterne faktisk er i dette system.</li>
+          <li>Klik <strong>Tilføj</strong>. Dataene er nu kun et midlertidigt lag.</li>
+          <li>Kontrollér punkter, felter, postnumre og dubletter.</li>
+          <li>Markér de godkendte objekter og kopiér dem med <kbd>Ctrl</kbd> + <kbd>C</kbd> eller <kbd>Cmd</kbd> + <kbd>C</kbd>.</li>
+          <li>Slå redigering til på <code>addresses</code>, og indsæt med <kbd>Ctrl</kbd> + <kbd>V</kbd> eller <kbd>Cmd</kbd> + <kbd>V</kbd>.</li>
+          <li>Kontrollér feltmappingen, gem, og slå redigering fra.</li>
+        </ol>
+        <div class="callout danger"><strong>Overskriv aldrig tabellen.</strong> Du skal tilføje rækker til den eksisterende tabel <code>addresses</code>, ikke oprette en ny tabel og ikke erstatte den eksisterende.</div>
+        <p>Den fulde importprocedure findes også i <a href="address-import-guide.md">vejledningen til adresseimport</a>.</p>
+      </section>
+
+      <section id="net">
+        <span class="section-number">10</span>
+        <h2>Opret andre kortobjekter</h2>
+        <h3>Ledning</h3>
+        <p>Markér <code>pipes</code>, slå redigering til, og vælg <strong>Tilføj linjeobjekt</strong>. Klik langs ledningens dokumenterede forløb, og højreklik for at afslutte. Udfyld mindst en unik <code>code</code>, <code>pipe_type</code>, <code>status</code> og <code>active=true</code>.</p>
+        <h3>Hane</h3>
+        <p>Markér <code>valves</code>, og tilføj et punkt på den relevante ledning. Brug en unik <code>code</code>, angiv <code>valve_type</code>, og brug normalt <code>open</code> som normal og aktuel position samt <code>operational</code> som status.</p>
+        <h3>Lukkeområde</h3>
+        <p>Markér <code>closure_areas</code>, og tegn hele det fagligt fastlagte område. Det skal gemmes som <strong>multipolygon</strong>. Angiv et unikt navn, en kort beskrivelse, <code>confidence</code> mellem 0 og 1 og <code>active=true</code>.</p>
+        <div class="callout warning"><strong>Placeringer skal være dokumenterede.</strong> Tegn ikke ledninger eller haner ud fra OpenStreetMap eller et skøn.</div>
+      </section>
+
+      <section id="relationer">
+        <span class="section-number">11</span>
+        <h2>Kobl data sammen</h2>
+        <p>Et lukkeområde ved ikke automatisk, hvilke haner og adresser der hører til det. Koblingerne gemmes i to tabeller:</p>
+        <div class="field-grid">
+          <div class="field"><code>closure_area_valves</code><span>Kobler et lukkeområde til en hane</span></div>
+          <div class="field"><code>closure_area_addresses</code><span>Kobler et lukkeområde til en adresse</span></div>
+        </div>
+
+        <div class="callout"><strong>Nemmest: brug Ledningskortet i GAVADR.</strong> En administrator eller kortansvarlig kan vælge ét lukkeområde, åbne <strong>Rediger koblinger</strong>, vælge haner og adresser og gemme uden at arbejde med UUID'er. Adresser inde i polygonen vises som forslag, som skal kontrolleres før gemning.</div>
+
+        <h3>Kobl via websystemet</h3>
+        <ol class="steps">
+          <li>Åbn <strong>Ledningskort</strong>, og sørg for at laget <strong>Lukkeområder</strong> er slået til.</li>
+          <li>Klik på det ønskede lukkeområde, så det vises under <strong>Valgt i kortet</strong>.</li>
+          <li>Vælg <strong>Rediger koblinger</strong>.</li>
+          <li>Markér de haner, der hører til området.</li>
+          <li>Gennemgå adresseforslagene, eller søg efter en bestemt adresse. <strong>Vælg alle i polygonen</strong> markerer forslagene, men gemmer dem ikke endnu.</li>
+          <li>Vælg <strong>Gem koblinger</strong>, når listen er fagligt kontrolleret.</li>
+        </ol>
+
+        <p>Resten af dette afsnit viser den avancerede QGIS-metode, hvis relationerne skal redigeres direkte i databasen.</p>
+
+        <div class="callout"><strong>Tabellerne ligger ikke på kortet.</strong> De har ingen geometri og vises derfor som almindelige databasetabeller. Du finder dem i QGIS' Browser-panel under PostgreSQL-forbindelsen.</div>
+
+        <h3>Find relationstabellerne i QGIS</h3>
+        <ol class="steps">
+          <li>Find panelet <strong>Browser</strong>. Mangler det, vælg <strong>Vis → Paneler → Browser</strong>.</li>
+          <li>Udvid <strong>PostgreSQL → GAVADR udvikling → public</strong>.</li>
+          <li>Find <code>closure_area_valves</code> og <code>closure_area_addresses</code> på listen. De kan have et tabelikon i stedet for et kortlagsikon.</li>
+          <li>Dobbeltklik på begge tabeller, eller træk dem ind i panelet <strong>Lag</strong>.</li>
+          <li>Højreklik på tabellen i Lag-panelet, og vælg <strong>Åbn attributtabel</strong>.</li>
+        </ol>
+
+        <div class="callout warning"><strong>Kan du ikke se tabellerne?</strong> Højreklik på PostgreSQL-forbindelsen, vælg <strong>Redigér forbindelse</strong>, og aktivér <strong>Vis også tabeller uden geometri</strong> eller <strong>List tables with no geometry</strong>. Gem forbindelsen, højreklik på den igen, og vælg <strong>Opdatér</strong>.</div>
+
+        <h3>Find de UUID'er, der skal kobles</h3>
+        <p>Alle objekter har et langt ID i feltet <code>id</code>. Åbn attributtabellen for hvert lag, find den rigtige række, og kopiér værdien fra <code>id</code>:</p>
+        <table>
+          <thead><tr><th>Objekt</th><th>Findes i</th><th>ID-felt</th></tr></thead>
+          <tbody>
+            <tr><td>Lukkeområde</td><td><code>closure_areas</code></td><td><code>id</code> → bruges som <code>closure_area_id</code></td></tr>
+            <tr><td>Hane</td><td><code>valves</code></td><td><code>id</code> → bruges som <code>valve_id</code></td></tr>
+            <tr><td>Adresse</td><td><code>addresses</code></td><td><code>id</code> → bruges som <code>address_id</code></td></tr>
+          </tbody>
+        </table>
+
+        <h3>Kobl en hane til et lukkeområde</h3>
+        <ol class="steps">
+          <li>Gem først hanen og lukkeområdet, så begge har fået et <code>id</code>.</li>
+          <li>Åbn attributtabellen for <code>closure_area_valves</code>.</li>
+          <li>Klik på blyanten for at slå redigering til, og vælg <strong>Tilføj række</strong> eller <strong>Tilføj objekt</strong>.</li>
+          <li>Sæt <code>closure_area_id</code> til værdien fra lukkeområdets <code>id</code>.</li>
+          <li>Sæt <code>valve_id</code> til værdien fra hanens <code>id</code>.</li>
+          <li>Lad <code>id</code>, <code>created_at</code> og <code>updated_at</code> blive udfyldt automatisk. Lad <code>deleted_at</code> og <code>updated_by</code> være tomme.</li>
+          <li>Gem ændringerne, og slå redigering fra.</li>
+        </ol>
+
+        <h3>Kobl en adresse til et lukkeområde</h3>
+        <ol class="steps">
+          <li>Gem først adressen og lukkeområdet, så begge har fået et <code>id</code>.</li>
+          <li>Åbn attributtabellen for <code>closure_area_addresses</code>.</li>
+          <li>Klik på blyanten, og opret en ny række.</li>
+          <li>Sæt <code>closure_area_id</code> til værdien fra lukkeområdets <code>id</code>.</li>
+          <li>Sæt <code>address_id</code> til værdien fra adressens <code>id</code>.</li>
+          <li>Lad databasefelterne blive udfyldt automatisk, og lad <code>deleted_at</code> være tomt.</li>
+          <li>Gem ændringerne, og slå redigering fra.</li>
+        </ol>
+
+        <div class="callout danger"><strong>Opret ikke samme kobling to gange.</strong> Databasen afviser dubletter. Hvis en tidligere kobling har en værdi i <code>deleted_at</code>, skal den eksisterende række genaktiveres ved at rydde feltet i stedet for at oprette en ny række.</div>
+        <p>Ved mange adresser kan <strong>Vælg efter placering</strong> finde kandidater i polygonen. Listen skal altid kontrolleres fagligt. Placering i polygonen opretter ikke relationen automatisk.</p>
+      </section>
+
+      <section id="kontrol">
+        <span class="section-number">12</span>
+        <h2>Kontrollér resultatet</h2>
+        <ul class="checklist">
+          <li>Gem alle QGIS-redigeringer.</li>
+          <li>Genindlæs <a href="http://localhost:8080/kort">Ledningskortet i GAVADR</a>.</li>
+          <li>Slå lagene til og fra, og søg efter vejnavn eller objektkode.</li>
+          <li>Klik på nye objekter, og kontrollér oplysninger og placering.</li>
+          <li>Opret en prøvevandlukning, og vælg den relevante hane.</li>
+          <li>Kontrollér de beregnede lukkeområder og berørte adresser.</li>
+          <li>Eksportér adresselisten som CSV, og sammenlign med det forventede resultat.</li>
+          <li>Aflys eller slet testsagen efter kontrollen.</li>
+        </ul>
+        <p>Data er først klar til drift, når både kortet og prøvevandlukningen er kontrolleret.</p>
+      </section>
+
+      <section id="fejl">
+        <span class="section-number">13</span>
+        <h2>Fejlfinding</h2>
+        <h3>QGIS kan ikke forbinde</h3>
+        <ul>
+          <li>Kontrollér, at Docker-services er startet og healthy.</li>
+          <li>Kontrollér vært <code>127.0.0.1</code>, port <code>5432</code> og database <code>gavadr</code>.</li>
+          <li>Kør <code>./scripts/create_qgis_user.sh</code> igen for at nulstille adgangskoden.</li>
+        </ul>
+        <h3>Objektet vises ikke i webkortet</h3>
+        <ul>
+          <li>Kontrollér, at ændringen er gemt.</li>
+          <li>Kontrollér <code>active=true</code> og tomt <code>deleted_at</code>.</li>
+          <li>Kontrollér gyldig geometri i EPSG:25832.</li>
+          <li>Genindlæs websiden.</li>
+        </ul>
+        <h3>Databasen afviser ændringen</h3>
+        <ul>
+          <li>Kontrollér unikt adresse-ID, ledningskode, hanekode eller områdenavn.</li>
+          <li>Kontrollér, at postnummeret har præcis fire tegn.</li>
+          <li>Kontrollér, at obligatoriske felter ikke er tomme.</li>
+          <li>Fjern ikke databasens sikkerhedsregler. Ret dataene i stedet.</li>
+        </ul>
+        <h3>Ingen adresser vises ved vandlukning</h3>
+        <ul>
+          <li>Kontrollér relationerne i <code>closure_area_valves</code> og <code>closure_area_addresses</code>.</li>
+          <li>Kontrollér, at adresse og lukkeområde er aktive.</li>
+          <li>Genberegn vandlukningen. Ældre sager ændres ikke automatisk efter GIS-rettelser.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <footer>
+    <p>GAVADR Vandværk · QGIS-begyndervejledning · Senest opdateret 8. august 2026</p>
+  </footer>
+</body>
+</html>

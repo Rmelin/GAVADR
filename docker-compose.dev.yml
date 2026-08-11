@@ -1,0 +1,17 @@
+services:
+  db:
+    # Det officielle PostGIS-image udgives ikke til ARM64. Docker Desktop
+    # emulerer derfor x86 på Apple Silicon i lokal udvikling.
+    platform: linux/amd64
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+
+  backend:
+    environment:
+      APP_ENV: development
+      AUTH_COOKIE_SECURE: "false"
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./backend/app:/app/app:ro
+    command: ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]

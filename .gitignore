@@ -1,0 +1,14 @@
+.env
+.env.dev
+.DS_Store
+backups/*
+!backups/.gitkeep
+uploads/*
+!uploads/.gitkeep
+backend/.pytest_cache/
+backend/**/*.pyc
+backend/**/__pycache__/
+backend/*.db
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
