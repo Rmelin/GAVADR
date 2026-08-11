@@ -66,7 +66,7 @@ test("public drift status is available without login", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Vandforsyningen kører normalt" })).toBeVisible();
   await expect(page).toHaveURL(/\/drift\?embed=1$/);
 
-  await page.setContent('<iframe title="Driftsstatus" src="http://127.0.0.1:8080/drift?embed=1"></iframe>');
+  await page.setContent('<iframe title="Driftsstatus" src="/drift?embed=1"></iframe>');
   await expect(page.frameLocator('iframe[title="Driftsstatus"]').getByRole("heading", { name: "Vandforsyningen kører normalt" })).toBeVisible();
 });
 
