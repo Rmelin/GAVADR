@@ -85,6 +85,7 @@ test("login and MapLibre maps fill their visible stages", async ({ page }) => {
   await page.getByLabel("Adgangskode").fill("browser-smoke");
   await page.getByRole("button", { name: "Log ind" }).click();
   await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByRole("link", { name: "Events" })).toBeVisible();
 
   await page.goto("/historik");
   await expect(page.getByRole("heading", { name: "Historik" })).toBeVisible();
