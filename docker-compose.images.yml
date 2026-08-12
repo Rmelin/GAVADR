@@ -1,0 +1,8 @@
+services:
+  backend:
+    image: ghcr.io/${GITHUB_OWNER:?GITHUB_OWNER skal angives}/gavadr-backend:${GAVADR_VERSION:-latest}
+    build: null
+
+  frontend:
+    image: ghcr.io/${GITHUB_OWNER:?GITHUB_OWNER skal angives}/gavadr-frontend:${GAVADR_VERSION:-latest}
+    build: null

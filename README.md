@@ -43,6 +43,7 @@ Frontend, backend og PostgreSQL bindes kun til localhost i udvikling. Tunnelprof
 - Manuel, atomisk backup køres med `./scripts/backup.sh`.
 - Restore er destruktiv og dokumenteret i `docs/backup-restore.md`.
 - OpenStreetMap.de er standardflisekilde gennem Nginx-proxyen `/tiles/`, med lokal proxycache. Se `docs/deployment.md` før valg af anden udbyder.
+- Se `docs/deploy-guide.md` for en samlet installation med GitHub Packages, Docker og Cloudflare Tunnel.
 - Se `docs/nas-cloudflare.md`, `docs/security.md` og `docs/release.md` før produktion.
 - Se `docs/admin-map-guide.md`, `docs/network-data-guide.md`, `docs/qgis.md`, `docs/planned-shutdowns.md` og `docs/history.md` for arbejdsgange.
 

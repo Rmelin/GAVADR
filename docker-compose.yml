@@ -10,7 +10,6 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD skal angives i .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gavadr} -d ${POSTGRES_DB:-gavadr}"]
       interval: 10s
