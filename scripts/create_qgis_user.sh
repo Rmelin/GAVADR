@@ -12,6 +12,19 @@ esac
 script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 project_dir="$(dirname "$script_dir")"
 
+if docker info >/dev/null 2>&1; then
+  docker_compose() {
+    docker compose "$@"
+  }
+elif command -v sudo >/dev/null 2>&1 && sudo docker info >/dev/null 2>&1; then
+  docker_compose() {
+    sudo docker compose "$@"
+  }
+else
+  printf 'Docker kan ikke tilgås. Kør som en bruger med Docker- eller sudo-adgang.\n' >&2
+  exit 1
+fi
+
 if [ -f "$project_dir/.env" ]; then
   env_file="$project_dir/.env"
   compose_override=""
@@ -22,25 +35,25 @@ fi
 
 run_psql_noninteractive() {
   if [ -n "$compose_override" ]; then
-    docker compose --project-directory "$project_dir" --env-file "$env_file" \
+    docker_compose --project-directory "$project_dir" --env-file "$env_file" \
       -f "$project_dir/docker-compose.yml" -f "$compose_override" \
-      exec -T db psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-gavadr}" -d "${POSTGRES_DB:-gavadr}" "$@"
+      exec -T db sh -c 'exec psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" "$@"' sh "$@"
   else
-    docker compose --project-directory "$project_dir" --env-file "$env_file" \
+    docker_compose --project-directory "$project_dir" --env-file "$env_file" \
       -f "$project_dir/docker-compose.yml" \
-      exec -T db psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-gavadr}" -d "${POSTGRES_DB:-gavadr}" "$@"
+      exec -T db sh -c 'exec psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" "$@"' sh "$@"
   fi
 }
 
 run_psql_interactive() {
   if [ -n "$compose_override" ]; then
-    docker compose --project-directory "$project_dir" --env-file "$env_file" \
+    docker_compose --project-directory "$project_dir" --env-file "$env_file" \
       -f "$project_dir/docker-compose.yml" -f "$compose_override" \
-      exec db psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-gavadr}" -d "${POSTGRES_DB:-gavadr}" "$@"
+      exec db sh -c 'exec psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" "$@"' sh "$@"
   else
-    docker compose --project-directory "$project_dir" --env-file "$env_file" \
+    docker_compose --project-directory "$project_dir" --env-file "$env_file" \
       -f "$project_dir/docker-compose.yml" \
-      exec db psql -v ON_ERROR_STOP=1 -U "${POSTGRES_USER:-gavadr}" -d "${POSTGRES_DB:-gavadr}" "$@"
+      exec db sh -c 'exec psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" "$@"' sh "$@"
   fi
 }
 

@@ -4,6 +4,8 @@ services:
   db:
     image: postgis/postgis:16-3.5-alpine
     restart: unless-stopped
+    ports:
+      - "${POSTGRES_BIND_ADDRESS:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-gavadr}
       POSTGRES_USER: ${POSTGRES_USER:-gavadr}

@@ -215,6 +215,32 @@ Opret derefter projektet i UGREEN Docker:
 
 Brug præcis projektnavnet `gavadr`, så de eksisterende `gavadr_postgres_data`, `gavadr_uploads` og `gavadr_public_status` volumes genbruges. Vælg aldrig at slette volumes under overgangen.
 
+### QGIS via Tailscale på UGREEN
+
+Find NAS'ens Tailscale IPv4-adresse via Tailscale-appen eller SSH:
+
+```bash
+tailscale ip -4
+```
+
+Angiv adressen i projektets `.env`, eksempelvis:
+
+```dotenv
+POSTGRES_BIND_ADDRESS=100.64.10.20
+POSTGRES_PORT=5432
+```
+
+Genopret projektet fra UGREEN Docker GUI, så portbindingen i `docker-compose.ugreen.yml` aktiveres. PostgreSQL lytter da kun på den valgte Tailscale-adresse. Brug ikke `0.0.0.0`, og opret ikke port-forwarding til `5432` i routeren.
+
+Opret derefter QGIS-brugeren via SSH fra projektmappen:
+
+```bash
+cd /volume2/docker/gavadr
+./scripts/create_qgis_user.sh
+```
+
+Scriptet bruger automatisk `sudo docker`, hvis UGREEN-brugeren ikke har direkte adgang til Docker. Vælg en unik adgangskode ved prompten. I QGIS oprettes en PostgreSQL-forbindelse med NAS'ens Tailscale-IP som vært, port `5432`, database `gavadr` og bruger `qgis_editor`.
+
 Kontrollér logs:
 
 ```bash

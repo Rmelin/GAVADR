@@ -46,7 +46,7 @@ Scriptet opretter rollen `qgis_editor`, tildeler mindst mulige GIS-rettigheder o
 7. Angiv bruger: `qgis_editor` og den valgte adgangskode.
 8. Aktivér kun lag i schemaet `public` og test forbindelsen.
 
-I produktion erstattes vært og netværksadgang med vandværkets interne LAN/VPN-konfiguration. Brug aldrig Cloudflare Tunnel til PostgreSQL.
+I produktion erstattes vært og netværksadgang med vandværkets interne LAN/VPN-konfiguration. Ved Tailscale bruges NAS'ens `100.x.y.z`-adresse som vært; se UGREEN-afsnittet i `docs/deploy-guide.md`. Brug aldrig Cloudflare Tunnel til PostgreSQL.
 
 ## 5. Tilføj lagene
 
