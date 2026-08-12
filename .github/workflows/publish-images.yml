@@ -2,8 +2,7 @@ name: GAVADR container images
 
 on:
   push:
-    branches: [main]
-    tags: ["v*"]
+    tags: ["*.*.*"]
 
 permissions:
   contents: read
@@ -17,6 +16,14 @@ jobs:
         image: [backend, frontend]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate release tag
+        run: |
+          [[ "$GITHUB_REF_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
 
       - name: Convert image owner to lowercase
         id: image
@@ -37,4 +44,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ steps.image.outputs.owner }}/gavadr-${{ matrix.image }}:latest
-            ghcr.io/${{ steps.image.outputs.owner }}/gavadr-${{ matrix.image }}:${{ github.sha }}
+            ghcr.io/${{ steps.image.outputs.owner }}/gavadr-${{ matrix.image }}:${{ github.ref_name }}

@@ -23,14 +23,16 @@ Erstat værdierne med dine egne. GitHub-ejeren skal skrives med små bogstaver i
 
 ## 1. Kontrollér images på GitHub
 
-Workflowet `.github/workflows/publish-images.yml` publicerer ved push til `main` og ved tags, der starter med `v`:
+Workflowet `.github/workflows/publish-images.yml` publicerer kun ved versions-tags i formatet `x.y.z`, eksempelvis `0.0.1`. Almindelige commits og merges til `main` publicerer ikke produktionsimages:
 
 ```text
 ghcr.io/<github-owner>/gavadr-frontend:latest
 ghcr.io/<github-owner>/gavadr-backend:latest
+ghcr.io/<github-owner>/gavadr-frontend:0.0.1
+ghcr.io/<github-owner>/gavadr-backend:0.0.1
 ```
 
-Hvert image publiceres også med commit-SHA som tag. Et versionstag som `v1.0.0` udløser workflowet, men det nuværende workflow publicerer `latest` og SHA-tagget. Brug SHA-tagget i produktion, hvis installationen skal være låst til en præcis revision.
+Hvert release publiceres både med versionstagget og som `latest`. Brug versionstagget i produktion, så installationen ikke ændres, før du bevidst vælger en ny version.
 
 Hvis pakkerne er offentlige, kan Docker hente dem uden login. Hvis de er private, skal serveren logge ind med et GitHub Personal Access Token med mindst `read:packages`:
 
@@ -139,7 +141,7 @@ WEB_PORT=8080
 FRONTEND_URL=https://drift.example.dk
 
 GITHUB_OWNER=<github-owner-med-små-bogstaver>
-GAVADR_VERSION=latest
+GAVADR_VERSION=0.0.1
 
 CLOUDFLARE_TUNNEL_TOKEN=<cloudflare-tunnel-token>
 
@@ -154,7 +156,7 @@ BOARD_NOTIFICATION_EMAILS=[]
 PUBLIC_STATUS_FILENAME=driftsstatus.json
 ```
 
-Brug helst et commit-SHA som `GAVADR_VERSION` efter første installation. Det gør opdatering og rollback mere kontrolleret end `latest`.
+Brug et versions-tag som `GAVADR_VERSION`. Det gør opdatering og rollback mere kontrolleret end `latest`.
 
 Commit aldrig `.env`, databasekoder, SMTP-koder, GitHub-tokens eller tunnel-tokenet.
 
@@ -284,7 +286,7 @@ $COMPOSE ps
 ./scripts/release-check.sh https://drift.example.dk
 ```
 
-Hvis `GAVADR_VERSION` er et SHA-tag, skal værdien ændres bevidst i `.env` før `pull`. Notér den tidligere værdi, så applikationsimages kan vælges igen ved rollback. Rul kun tilbage til en version, der er kompatibel med den aktuelle databasemigration.
+Når `GAVADR_VERSION` er et versions-tag, skal værdien ændres bevidst i `.env` før `pull`. Notér den tidligere værdi, så applikationsimages kan vælges igen ved rollback. Rul kun tilbage til en version, der er kompatibel med den aktuelle databasemigration.
 
 ## 10. Fejlfinding
 
