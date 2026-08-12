@@ -195,6 +195,26 @@ $COMPOSE ps
 
 Backend venter på PostgreSQL og kører automatisk `alembic upgrade head` før API'et starter. Frontend publiceres kun på serverens `127.0.0.1:8080`; ekstern adgang går gennem tunnelen.
 
+### UGREEN Docker GUI
+
+UGREEN registrerer ikke nødvendigvis et Compose-projekt i GUI'en, når det er oprettet via SSH. Filen `docker-compose.ugreen.yml` samler image-overridet og tunnelprofilen i én konfiguration, som kan importeres i GUI'en.
+
+Stop først SSH-oprettede containere uden at slette volumes:
+
+```bash
+cd /volume2/docker/gavadr
+sudo docker compose --env-file .env -f docker-compose.yml -f docker-compose.images.yml --profile tunnel down
+```
+
+Opret derefter projektet i UGREEN Docker:
+
+1. Angiv navnet `gavadr`.
+2. Vælg den eksisterende projektmappe, eksempelvis `/volume2/docker/gavadr`, som storage path. Mappen skal indeholde den eksisterende `.env`.
+3. Importér `docker-compose.ugreen.yml` som Compose configuration.
+4. Behold **Run immediately after creation** valgt, og vælg **Deploy**.
+
+Brug præcis projektnavnet `gavadr`, så de eksisterende `gavadr_postgres_data`, `gavadr_uploads` og `gavadr_public_status` volumes genbruges. Vælg aldrig at slette volumes under overgangen.
+
 Kontrollér logs:
 
 ```bash
