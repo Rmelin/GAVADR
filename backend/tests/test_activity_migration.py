@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from sqlalchemy import inspect
 
 from app.db.base import Base
@@ -17,3 +19,9 @@ def test_planned_shutdown_incident_metadata_has_real_keys_and_unique_pair():
     assert "activity_type" not in inspect(table).columns
     assert "activity_type" not in Base.metadata.tables["incidents"].columns
     assert "activity_type" not in Base.metadata.tables["planned_shutdowns"].columns
+
+
+def test_network_migration_does_not_seed_synthetic_samples():
+    migration = Path(__file__).parents[1] / "alembic/versions/20260807_0002_network_map_data.py"
+    source = migration.read_text()
+    assert "\n    _seed_synthetic_data()\n" not in source

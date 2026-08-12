@@ -164,7 +164,7 @@ I Cloudflare-dashboardet:
 
 1. Åbn **Zero Trust** eller **Networks** og vælg **Tunnels**.
 2. Opret en ny Cloudflared-tunnel, eksempelvis `gavadr`.
-3. Vælg Docker som connector og kopiér kun tunnel-tokenet fra kommandoen.
+3. Vælg Docker som connector og kopiér kun tunnel-tokenet efter `--token` fra kommandoen. Brug ikke et almindeligt Cloudflare API-token, og indsæt ikke hele Docker-kommandoen i `.env`.
 4. Indsæt tokenet som `CLOUDFLARE_TUNNEL_TOKEN` i serverens `.env`.
 5. Opret et **Public hostname**, eksempelvis `drift.example.dk`.
 6. Vælg service type `HTTP` og origin URL `http://frontend:80`.
@@ -311,6 +311,19 @@ $COMPOSE logs cloudflared
 
 Origin i Cloudflare skal være `http://frontend:80`, ikke `localhost:8080`.
 
+Hvis loggen viser `Provided Tunnel token is not valid`, skal du åbne tunnelen i Cloudflare-dashboardet, vælge **Configure** eller **Add a connector**, vælge Docker og kopiere den lange værdi efter `--token`. Linjen i `.env` skal kun indeholde tokenet:
+
+```dotenv
+CLOUDFLARE_TUNNEL_TOKEN=eyJ...
+```
+
+Gem filen og genopret kun tunnel-containeren:
+
+```bash
+$COMPOSE --profile tunnel up -d --force-recreate cloudflared
+$COMPOSE logs --tail=100 cloudflared
+```
+
 ### Backend starter ikke
 
 ```bash
@@ -320,6 +333,18 @@ $COMPOSE exec backend alembic current
 ```
 
 Typiske årsager er forkert databasekode, for kort `AUTH_SECRET_KEY`, `AUTH_COOKIE_SECURE=false` i produktion eller en fejlet migration.
+
+### Syntetiske områder vises på produktionskortet
+
+Tidlige versioner indsatte illustrative kortobjekter gennem migrationskæden. Migration `20260812_0015` skjuler automatisk de kendte syntetiske adresser, ledninger, haner, lukkeområder og scenarier. Opdatér backend-imaget, og kontrollér at migrationen er kørt:
+
+```bash
+$COMPOSE pull backend
+$COMPOSE up -d backend
+$COMPOSE exec backend alembic current
+```
+
+Outputtet skal vise `20260812_0015 (head)`. Genindlæs derefter kortet i browseren.
 
 ### Databasen melder Permission denied for initdb
 

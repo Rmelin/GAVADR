@@ -49,7 +49,7 @@ Frontend, backend og PostgreSQL bindes kun til localhost i udvikling. Tunnelprof
 
 ## Kendte begrænsninger
 
-- Medfølgende kortobjekter er syntetiske udviklingsdata og må ikke bruges som faktiske ledningsoplysninger.
+- Eventuelle syntetiske kortobjekter fra installationer før migration `20260812_0015` skjules automatisk og må ikke bruges som faktiske ledningsoplysninger.
 - Netværksberegning bruger foruddefinerede lukkeområder, ikke hydraulisk analyse eller pgRouting.
 - QGIS-ændringer har ikke et fuldt triggerbaseret revisionsspor.
 - Login returnerer fortsat et bearer-token til eksisterende API/QGIS-lignende klienter, selv om browseren bruger `HttpOnly`-cookie. Tokenet må ikke gemmes i browserlager.

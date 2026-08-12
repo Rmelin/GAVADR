@@ -138,8 +138,6 @@ def upgrade() -> None:
     for table in ("addresses", "pipes", "valves", "closure_areas"):
         op.create_index(f"ix_{table}_geometry", table, ["geometry"], postgresql_using="gist")
 
-    _seed_synthetic_data()
-
     if op.get_bind().dialect.name == "postgresql":
         op.execute("""
             CREATE VIEW qgis_active_valves AS
