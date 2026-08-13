@@ -16,7 +16,7 @@ interface DraftScenario {
 }
 
 const scenarioLayers: LayerState = {
-  closureAreas: true, pipes: true, valves: true, addresses: false,
+  closureAreas: true, mainPipes: true, servicePipes: true, valves: true, addresses: false,
   plannedShutdowns: false, activeShutdowns: false, newIncidents: false, activeIncidents: false,
 };
 

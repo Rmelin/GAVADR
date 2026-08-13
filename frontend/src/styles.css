@@ -328,7 +328,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .layer-toggle:has(input:focus-visible) { outline: 3px solid color-mix(in srgb, var(--aqua), transparent 40%); outline-offset: 1px; border-radius: .4rem; }
 .layer-swatch { flex: 0 0 auto; width: 1rem; height: 1rem; border-radius: .2rem; }
 .layer-swatch--closureAreas { background: #a78bfa55; border: 1px dashed #c4b5fd; }
-.layer-swatch--pipes { height: 3px; background: linear-gradient(90deg, var(--blue) 55%, var(--aqua) 55%); border-radius: 0; }
+.layer-swatch--mainPipes { height: 4px; background: var(--blue); border-radius: 0; }
+.layer-swatch--servicePipes { height: 3px; background: repeating-linear-gradient(90deg, var(--aqua) 0 5px, transparent 5px 8px); border-radius: 0; }
 .layer-swatch--valves { width: .8rem; height: .8rem; background: var(--amber); border: 2px solid #4a3100; border-radius: 50%; }
 .layer-swatch--addresses { width: .65rem; height: .65rem; background: #f4f8f7; border: 1px solid #16645e; border-radius: 50%; }
 .layer-swatch--plannedShutdowns, .layer-swatch--activeShutdowns, .layer-swatch--newIncidents, .layer-swatch--activeIncidents { width: .8rem; height: .8rem; border: 2px solid #fff; border-radius: 50%; }

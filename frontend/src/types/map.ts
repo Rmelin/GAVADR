@@ -1,6 +1,6 @@
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 
-export type MapLayerId = "closureAreas" | "pipes" | "valves" | "addresses" | "plannedShutdowns" | "activeShutdowns" | "newIncidents" | "activeIncidents";
+export type MapLayerId = "closureAreas" | "mainPipes" | "servicePipes" | "valves" | "addresses" | "plannedShutdowns" | "activeShutdowns" | "newIncidents" | "activeIncidents";
 
 export type MapPropertyPrimitive = boolean | number | string | null;
 export interface ClosureScenario {
@@ -47,7 +47,8 @@ export interface MapSearchResult {
 
 export interface LayerState {
   closureAreas: boolean;
-  pipes: boolean;
+  mainPipes: boolean;
+  servicePipes: boolean;
   valves: boolean;
   addresses: boolean;
   plannedShutdowns: boolean;

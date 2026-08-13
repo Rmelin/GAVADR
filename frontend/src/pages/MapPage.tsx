@@ -11,7 +11,7 @@ import type { LayerState, MapFeature, MapLayerId, MapSearchResult, MapSelection,
 import { useAppSettings } from "../hooks/useAppSettings";
 import { useDashboardMap } from "../hooks/useDashboardMap";
 
-const initialLayers: LayerState = { closureAreas: true, pipes: true, valves: true, addresses: true, plannedShutdowns: true, activeShutdowns: true, newIncidents: true, activeIncidents: true };
+const initialLayers: LayerState = { closureAreas: true, mainPipes: true, servicePipes: true, valves: true, addresses: true, plannedShutdowns: true, activeShutdowns: true, newIncidents: true, activeIncidents: true };
 
 export function MapPage() {
   const data = useMapData();
@@ -30,7 +30,8 @@ export function MapPage() {
   const counts = {
     addresses: data.addresses.data?.features.length,
     valves: data.valves.data?.features.length,
-    pipes: data.pipes.data?.features.length,
+    mainPipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "distribution").length,
+    servicePipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "service").length,
     closureAreas: data.closureAreas.data?.features.length,
     plannedShutdowns: operations.data?.features.filter((feature) => feature.properties.kind === "shutdown" && feature.properties.status === "planned").length,
     activeShutdowns: operations.data?.features.filter((feature) => feature.properties.kind === "shutdown" && feature.properties.status === "in_progress").length,

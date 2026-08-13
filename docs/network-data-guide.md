@@ -68,7 +68,7 @@ Udfyld:
 | Felt | Krav og eksempel |
 |---|---|
 | `code` | Påkrævet, unikt og stabilt ID, eksempelvis `LED-0042`. |
-| `pipe_type` | `distribution` for hoved-/fordelingsledning eller `service` for stikledning. |
+| `pipe_type` | Vælg Hovedledning (`distribution`) eller Stikledning (`service`). Brug ikke andre stavemåder. |
 | `material` | Eksempelvis `PE`, `PVC` eller `cast_iron`. |
 | `diameter_mm` | Positiv diameter i millimeter. |
 | `installation_year` | Firecifret år mellem 1800 og 2200, hvis kendt. |
@@ -82,6 +82,8 @@ Udfyld:
 | `notes` | Intern bemærkning. |
 
 Brug ikke risikoværdi `0` som erstatning for “ukendt”; lad i stedet feltet være tomt. Kontrollér, at linjen ikke har selvskæringer eller utilsigtede knæk.
+
+Indlæs `docs/qgis-pipes.qml` på laget som beskrevet i `docs/qgis.md`. Så vises hovedledninger som kraftige, blå linjer og stikledninger som tyndere, turkise, stiplede linjer, og `pipe_type` vælges fra en dansk liste.
 
 ## 3. Opret haner
 

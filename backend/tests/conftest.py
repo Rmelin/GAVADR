@@ -25,7 +25,7 @@ async def database():
     async with engine.begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
         await connection.execute(text("CREATE TABLE alembic_version (version_num VARCHAR(32) NOT NULL)"))
-        await connection.execute(text("INSERT INTO alembic_version VALUES ('20260812_0015')"))
+        await connection.execute(text("INSERT INTO alembic_version VALUES ('20260813_0016')"))
     async with SessionLocal() as session:
         roles = [
             Role(name="admin", description="Administrator"),
