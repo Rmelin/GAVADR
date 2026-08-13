@@ -11,7 +11,7 @@ import type { LayerState, MapFeature, MapLayerId, MapSearchResult, MapSelection,
 import { useAppSettings } from "../hooks/useAppSettings";
 import { useDashboardMap } from "../hooks/useDashboardMap";
 
-const initialLayers: LayerState = { closureAreas: true, mainPipes: true, servicePipes: true, valves: true, addresses: true, plannedShutdowns: true, activeShutdowns: true, newIncidents: true, activeIncidents: true };
+const initialLayers: LayerState = { closureAreas: true, mainPipes: true, distributionPipes: true, servicePipes: true, valves: true, addresses: true, plannedShutdowns: true, activeShutdowns: true, newIncidents: true, activeIncidents: true };
 
 export function MapPage() {
   const data = useMapData();
@@ -30,7 +30,8 @@ export function MapPage() {
   const counts = {
     addresses: data.addresses.data?.features.length,
     valves: data.valves.data?.features.length,
-    mainPipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "distribution").length,
+    mainPipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "main").length,
+    distributionPipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "distribution").length,
     servicePipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "service").length,
     closureAreas: data.closureAreas.data?.features.length,
     plannedShutdowns: operations.data?.features.filter((feature) => feature.properties.kind === "shutdown" && feature.properties.status === "planned").length,
@@ -71,7 +72,8 @@ export function MapPage() {
         {operations.isError && <p className="map-operations-state" role="alert">Driftslag kunne ikke indlæses.</p>}
         <div className="map-legend" aria-label="Signaturforklaring">
           <strong>Signatur</strong>
-          <span><i className="legend-main" />Hovedledning</span>
+          <span><i className="legend-main" />Hovedforsyningsledning</span>
+          <span><i className="legend-distribution" />Fordelingsledning</span>
           <span><i className="legend-service" />Stikledning</span>
           <span><i className="legend-valve" />Hane</span>
           <span><i className="legend-address" />Adresse</span>

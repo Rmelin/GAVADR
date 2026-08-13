@@ -329,6 +329,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .layer-swatch { flex: 0 0 auto; width: 1rem; height: 1rem; border-radius: .2rem; }
 .layer-swatch--closureAreas { background: #a78bfa55; border: 1px dashed #c4b5fd; }
 .layer-swatch--mainPipes { height: 4px; background: var(--blue); border-radius: 0; }
+.layer-swatch--distributionPipes { height: 3px; background: #f59e0b; border-radius: 0; }
 .layer-swatch--servicePipes { height: 3px; background: repeating-linear-gradient(90deg, var(--aqua) 0 5px, transparent 5px 8px); border-radius: 0; }
 .layer-swatch--valves { width: .8rem; height: .8rem; background: var(--amber); border: 2px solid #4a3100; border-radius: 50%; }
 .layer-swatch--addresses { width: .65rem; height: .65rem; background: #f4f8f7; border: 1px solid #16645e; border-radius: 50%; }
@@ -352,6 +353,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .map-legend > strong { margin-bottom: .15rem; }
 .map-legend span { display: flex; align-items: center; gap: .65rem; color: var(--muted-strong); font-size: .62rem; }
 .map-legend i { width: 1.4rem; height: 3px; background: var(--blue); }
+.map-legend .legend-distribution { background: #f59e0b; }
 .map-legend .legend-service { background: repeating-linear-gradient(90deg, var(--aqua) 0 5px, transparent 5px 8px); }
 .map-legend .legend-valve { width: .65rem; height: .65rem; margin-inline: .37rem; background: var(--amber); border: 1px solid #4a3100; border-radius: 50%; }
 .map-legend .legend-address { width: .55rem; height: .55rem; margin-inline: .42rem; background: white; border: 1px solid #16645e; border-radius: 50%; }

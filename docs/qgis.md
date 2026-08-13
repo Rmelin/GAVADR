@@ -24,11 +24,12 @@ Brug views til almindelig visning. Direkte tabelredigering gives kun til den kor
 
 ## Ledningstyper og signatur
 
-Alle ledninger ligger i samme tabel, men `pipe_type` skelner mellem de to typer:
+Alle ledninger ligger i samme tabel, men `pipe_type` skelner mellem de tre typer:
 
 | Værdi i databasen | Vises som |
 |---|---|
-| `distribution` | Hovedledning |
+| `main` | Hovedforsyningsledning |
+| `distribution` | Fordelingsledning |
 | `service` | Stikledning |
 
 Brug `docs/qgis-pipes.qml` for at gøre typerne tydelige og undgå fritekst i QGIS:
@@ -36,9 +37,9 @@ Brug `docs/qgis-pipes.qml` for at gøre typerne tydelige og undgå fritekst i QG
 1. Højreklik på laget `pipes` eller `qgis_active_pipes`, og vælg **Egenskaber**.
 2. Vælg **Symbologi**, klik **Stil** nederst, og vælg **Indlæs stil**.
 3. Vælg `docs/qgis-pipes.qml`, indlæs stilen, og gem QGIS-projektet.
-4. Ved redigering af `pipes` vælger du nu **Hovedledning** eller **Stikledning** i formularen. QGIS gemmer automatisk `distribution` eller `service`.
+4. Ved redigering af `pipes` vælger du nu **Hovedforsyningsledning**, **Fordelingsledning** eller **Stikledning** i formularen. QGIS gemmer automatisk `main`, `distribution` eller `service`.
 
-Stilen viser hovedledninger som kraftige, blå linjer og stikledninger som tyndere, turkise, stiplede linjer. Webappens to kortlag bruger de samme værdier og kan slås til og fra hver for sig. Hvis en eksisterende ledning ikke vises i en af kategorierne, skal dens `pipe_type` rettes til en af værdierne ovenfor; opret ikke nye varianter.
+Stilen viser hovedforsyningsledninger som kraftige blå linjer, fordelingsledninger som orange linjer og stikledninger som tyndere turkise, stiplede linjer. Webappens tre kortlag bruger de samme værdier og kan slås til og fra hver for sig. Hvis en eksisterende ledning ikke vises i en af kategorierne, skal dens `pipe_type` rettes til en af værdierne ovenfor; opret ikke nye varianter.
 
 Lukkescenarier redigeres kun på `/lukkescenarier`, hvor scenarieregistret og live-kortet validerer mindst ét område og én hane og skriver auditlog. Den globale model ligger i `closure_scenarios`, `closure_scenario_areas` og `closure_scenario_valves`. Tidligere scenario- og haneområderelationer er read-only legacy-data efter migration `20260811_0013`.
 

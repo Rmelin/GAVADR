@@ -26,6 +26,7 @@ const sourceIds = ["closure-areas", "pipes", "valves", "addresses", "operations"
 const layerGroups: Record<keyof LayerState, string[]> = {
   closureAreas: ["closure-fill", "closure-outline", "selected-closure-fill", "selected-closure-outline"],
   mainPipes: ["main-pipes"],
+  distributionPipes: ["distribution-pipes"],
   servicePipes: ["service-pipes"],
   valves: ["valves", "selected-valves"],
   addresses: ["addresses"],
@@ -98,14 +99,15 @@ export function NetworkMap({ addresses, valves, pipes, closureAreas, operations,
         map.addLayer({ id: "selected-closure-fill", type: "fill", source: "closure-areas", filter: selectedFilter(selectedClosureAreaIds), paint: { "fill-color": "#ff6e65", "fill-opacity": 0.38 } });
         map.addLayer({ id: "selected-closure-outline", type: "line", source: "closure-areas", filter: selectedFilter(selectedClosureAreaIds), paint: { "line-color": "#ff3f35", "line-width": 4 } });
         map.addLayer({ id: "service-pipes", type: "line", source: "pipes", filter: ["==", ["get", "pipe_type"], "service"], paint: { "line-color": "#54d5c6", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.4, 17, 3], "line-dasharray": [2, 1.5] } });
-        map.addLayer({ id: "main-pipes", type: "line", source: "pipes", filter: ["==", ["get", "pipe_type"], "distribution"], paint: { "line-color": "#1d8cff", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2.4, 17, 5] } });
+        map.addLayer({ id: "distribution-pipes", type: "line", source: "pipes", filter: ["==", ["get", "pipe_type"], "distribution"], paint: { "line-color": "#f59e0b", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.9, 17, 4] } });
+        map.addLayer({ id: "main-pipes", type: "line", source: "pipes", filter: ["==", ["get", "pipe_type"], "main"], paint: { "line-color": "#1d8cff", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2.8, 17, 6] } });
         map.addLayer({ id: "addresses", type: "circle", source: "addresses", paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 2, 17, 5], "circle-color": "#f4f8f7", "circle-stroke-color": "#16645e", "circle-stroke-width": 1.5 } });
         map.addLayer({ id: "valves", type: "circle", source: "valves", paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 4, 17, 8], "circle-color": "#f4b942", "circle-stroke-color": "#4a3100", "circle-stroke-width": 2 } });
         map.addLayer({ id: "selected-valves", type: "circle", source: "valves", filter: selectedFilter(selectedValveIds), paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 7, 17, 12], "circle-color": "#ff6e65", "circle-stroke-color": "#ffffff", "circle-stroke-width": 3 } });
         operationalLayers.forEach((layer) => map.addLayer(layer));
 
         Object.entries(layerGroups).forEach(([group, ids]) => ids.forEach((id) => map.setLayoutProperty(id, "visibility", layers[group as keyof LayerState] ? "visible" : "none")));
-        const clickableLayers = ["closure-fill", "service-pipes", "main-pipes", "valves", "addresses"];
+        const clickableLayers = ["closure-fill", "service-pipes", "distribution-pipes", "main-pipes", "valves", "addresses"];
         const selectFeature = (event: MapLayerMouseEvent) => {
           const visibleOperationalLayers = operationalLayerIds.filter((id) => map.getLayer(id));
           if (visibleOperationalLayers.length && map.queryRenderedFeatures(event.point, { layers: visibleOperationalLayers }).length) return;

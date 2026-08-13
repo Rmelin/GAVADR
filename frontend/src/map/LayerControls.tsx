@@ -2,8 +2,9 @@ import type { LayerState, MapLayerId } from "../types/map";
 
 const layers: { id: MapLayerId; label: string; detail: string }[] = [
   { id: "closureAreas", label: "Lukkeområder", detail: "Forsyningszoner" },
-  { id: "mainPipes", label: "Hovedledninger", detail: "Fordelingsledninger" },
-  { id: "servicePipes", label: "Stikledninger", detail: "Ledninger til tilslutninger" },
+  { id: "mainPipes", label: "Hovedledninger", detail: "Hovedforsyningsledninger" },
+  { id: "distributionPipes", label: "Fordelingsledninger", detail: "Forgreninger til flere ejendomme" },
+  { id: "servicePipes", label: "Stikledninger", detail: "Tilslutninger til enkelte ejendomme" },
   { id: "valves", label: "Haner", detail: "Afspærringshaner" },
   { id: "addresses", label: "Adresser", detail: "Forsyningspunkter" },
   { id: "plannedShutdowns", label: "Planlagte vandlukninger", detail: "Godkendt kommende arbejde" },

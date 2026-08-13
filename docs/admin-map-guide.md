@@ -92,7 +92,7 @@ Se [`address-import-guide.md`](address-import-guide.md) for manuel oprettelse, C
 ### Ledning
 
 - `code`: unikt og stabilt lednings-ID
-- `pipe_type`: brug `distribution` til hoved-/fordelingsledning og `service` til stikledning
+- `pipe_type`: brug `main` til hovedforsyningsledning, `distribution` til fordelingsledning og `service` til stikledning
 - `material`: eksempelvis `PE`, `PVC` eller `cast_iron`
 - `diameter_mm`: positiv diameter i millimeter
 - `installation_year`: firecifret årstal, hvis kendt
