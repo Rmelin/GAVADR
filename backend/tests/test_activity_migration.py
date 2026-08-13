@@ -25,3 +25,10 @@ def test_network_migration_does_not_seed_synthetic_samples():
     migration = Path(__file__).parents[1] / "alembic/versions/20260807_0002_network_map_data.py"
     source = migration.read_text()
     assert "\n    _seed_synthetic_data()\n" not in source
+
+
+def test_three_pipe_types_migration_uses_exact_constraint_name():
+    migration = Path(__file__).parents[1] / "alembic/versions/20260813_0017_three_pipe_types.py"
+    source = migration.read_text()
+    assert source.count("ALTER TABLE pipes DROP CONSTRAINT ck_pipes_pipe_type") == 2
+    assert "op.drop_constraint" not in source

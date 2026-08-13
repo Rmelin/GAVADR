@@ -14,7 +14,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.drop_constraint("ck_pipes_pipe_type", "pipes", type_="check")
+    op.execute("ALTER TABLE pipes DROP CONSTRAINT ck_pipes_pipe_type")
     op.execute(
         """
         UPDATE pipes
@@ -36,7 +36,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.drop_constraint("ck_pipes_pipe_type", "pipes", type_="check")
+    op.execute("ALTER TABLE pipes DROP CONSTRAINT ck_pipes_pipe_type")
     op.execute("UPDATE pipes SET pipe_type = 'distribution' WHERE pipe_type IN ('main', 'distribution')")
     op.execute(
         """
