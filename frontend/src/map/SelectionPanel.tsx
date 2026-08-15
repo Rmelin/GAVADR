@@ -4,7 +4,7 @@ interface Props { selection: MapSelection; onClose: () => void }
 
 const labels: Record<string, string> = {
   code: "ID", name: "Navn", label: "Betegnelse", pipe_type: "Ledningstype", material: "Materiale",
-  diameter_mm: "Diameter (mm)", installation_year: "Anlægsår", status: "Status", valve_type: "Hanetype",
+  diameter_mm: "Diameter (mm)", installation_year: "Anlægsår", status: "Status", valve_type: "Hanetype", network_level: "Netniveau",
   current_position: "Aktuel position", street_name: "Vej", house_number: "Husnr.", postal_code: "Postnr.", city: "By",
   description: "Beskrivelse", confidence: "Sikkerhed", active: "Aktiv",
 };

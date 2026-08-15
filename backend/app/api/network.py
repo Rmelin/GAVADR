@@ -140,6 +140,7 @@ async def valves(db: DbSession, user: CurrentUser) -> dict[str, Any]:
                 {
                     "code": row.code,
                     "valve_type": row.valve_type,
+                    "network_level": row.network_level,
                     "normal_position": row.normal_position,
                     "current_position": row.current_position,
                     "status": row.status,

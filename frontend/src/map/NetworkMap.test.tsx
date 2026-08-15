@@ -26,14 +26,19 @@ vi.mock("maplibre-gl", () => {
 
 describe("NetworkMap", () => {
   it("initialiserer GeoJSON-kilder og rydder MapLibre op", () => {
-    const view = render(<NetworkMap layers={{ closureAreas: true, mainPipes: true, distributionPipes: false, servicePipes: false, valves: true, addresses: true, plannedShutdowns: true, activeShutdowns: true, newIncidents: true, activeIncidents: true }} defaultLongitude={12.28839} defaultLatitude={55.966293} defaultZoom={14.5} onFeatureSelect={vi.fn()} />);
+    const view = render(<NetworkMap layers={{ closureAreas: true, mainPipes: true, distributionPipes: false, servicePipes: false, mainValves: true, distributionValves: false, serviceValves: false, uncategorizedValves: true, addresses: true, plannedShutdowns: true, activeShutdowns: true, newIncidents: true, activeIncidents: true }} defaultLongitude={12.28839} defaultLatitude={55.966293} defaultZoom={14.5} onFeatureSelect={vi.fn()} />);
     expect(mapSpies.addSource).toHaveBeenCalledTimes(5);
     expect(mapSpies.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: "main-pipes", filter: ["==", ["get", "pipe_type"], "main"] }));
     expect(mapSpies.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: "distribution-pipes", filter: ["==", ["get", "pipe_type"], "distribution"] }));
     expect(mapSpies.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: "service-pipes", filter: ["==", ["get", "pipe_type"], "service"] }));
+    expect(mapSpies.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: "main-valves", filter: ["==", ["get", "network_level"], "main"] }));
+    expect(mapSpies.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: "distribution-valves", filter: ["==", ["get", "network_level"], "distribution"] }));
+    expect(mapSpies.addLayer).toHaveBeenCalledWith(expect.objectContaining({ id: "service-valves", filter: ["==", ["get", "network_level"], "service"] }));
     expect(mapSpies.setLayoutProperty).toHaveBeenCalledWith("main-pipes", "visibility", "visible");
     expect(mapSpies.setLayoutProperty).toHaveBeenCalledWith("distribution-pipes", "visibility", "none");
     expect(mapSpies.setLayoutProperty).toHaveBeenCalledWith("service-pipes", "visibility", "none");
+    expect(mapSpies.setLayoutProperty).toHaveBeenCalledWith("main-valves", "visibility", "visible");
+    expect(mapSpies.setLayoutProperty).toHaveBeenCalledWith("distribution-valves", "visibility", "none");
     expect(mapSpies.addControl).toHaveBeenCalledTimes(2);
     expect(mapSpies.constructor).toHaveBeenCalledWith(expect.objectContaining({
       center: [12.28839, 55.966293],

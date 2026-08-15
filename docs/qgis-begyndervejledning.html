@@ -323,9 +323,18 @@ DAR-001;Gadeledsvej;66A;4293;Dianalund;654930.12;6169200.45;true</code></pre>
         <h3>Ledning</h3>
         <p>Indlæs først stilen <code>docs/qgis-pipes.qml</code> via lagets <strong>Egenskaber → Symbologi → Stil → Indlæs stil</strong>. Markér derefter <code>pipes</code>, slå redigering til, og vælg <strong>Tilføj linjeobjekt</strong>. Klik langs ledningens dokumenterede forløb, og højreklik for at afslutte. Udfyld mindst en unik <code>code</code>, vælg <strong>Hovedforsyningsledning</strong> (<code>main</code>), <strong>Fordelingsledning</strong> (<code>distribution</code>) eller <strong>Stikledning</strong> (<code>service</code>) som <code>pipe_type</code>, og angiv <code>status</code> samt <code>active=true</code>. Hovedforsyningsledningen fører vand gennem området, fordelingsledningen forgrener til flere ejendomme, og stikledningen går frem mod den enkelte ejendom. Brug ikke andre stavemåder. Stilen viser kategorierne som henholdsvis kraftig blå, orange og tynd turkis stiplet linje.</p>
         <h3>Hane</h3>
-        <p>Markér <code>valves</code>, og tilføj et punkt på den relevante ledning. Brug en unik <code>code</code>, angiv <code>valve_type</code>, og brug normalt <code>open</code> som normal og aktuel position samt <code>operational</code> som status.</p>
+        <p>Indlæs først <code>docs/qgis-valves.qml</code> via lagets <strong>Egenskaber → Symbologi → Stil → Indlæs stil</strong>. Markér derefter <code>valves</code>, og tilføj et punkt på den relevante ledning. Brug en unik <code>code</code>, angiv den fysiske <code>valve_type</code>, og vælg <code>network_level</code> som <strong>Hovedhane</strong>, <strong>Fordelingshane</strong> eller <strong>Stikhane</strong>. Brug normalt <code>open</code> som normal og aktuel position samt <code>operational</code> som status. Eksisterende haner uden netniveau vises som <strong>Ikke kategoriseret</strong> og skal gennemgås manuelt.</p>
         <h3>Lukkeområde</h3>
         <p>Markér <code>closure_areas</code>, og tegn hele det fagligt fastlagte område. Det skal gemmes som <strong>multipolygon</strong>. Angiv et unikt navn, en kort beskrivelse, <code>confidence</code> mellem 0 og 1 og <code>active=true</code>.</p>
+        <h3>Ret, sammenlæg eller slet et nyt lukkeområde</h3>
+        <p>Ret fejltegninger, før området kobles til adresser eller lukkescenarier. Slå redigering til på <code>closure_areas</code>, og brug knudeværktøjet til at rette en enkelt geometri.</p>
+        <ol class="steps">
+          <li>Ved sammenlægning markeres områderne, hvorefter <strong>Sammenlæg valgte objekter</strong> vælges.</li>
+          <li>Vælg attributterne fra det område, hvis navn og oplysninger skal bevares.</li>
+          <li>Ved sletning markeres fejltegningen, hvorefter <strong>Slet valgte objekter</strong> vælges.</li>
+          <li>Gem ændringerne, kontrollér en gyldig multipolygon, og genindlæs Ledningskortet.</li>
+        </ol>
+        <div class="callout danger"><strong>Kun før området tages i brug.</strong> Sammenlægning flytter ikke adresse- eller scenariekoblinger. Databasen afviser sletning, hvis området allerede indgår i en vandlukning.</div>
         <div class="callout warning"><strong>Placeringer skal være dokumenterede.</strong> Tegn ikke ledninger eller haner ud fra OpenStreetMap eller et skøn.</div>
       </section>
 

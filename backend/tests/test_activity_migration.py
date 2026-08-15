@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from sqlalchemy import inspect
+from sqlalchemy import CheckConstraint, inspect
 
 from app.db.base import Base
 
@@ -32,3 +32,17 @@ def test_three_pipe_types_migration_uses_exact_constraint_name():
     source = migration.read_text()
     assert source.count("ALTER TABLE pipes DROP CONSTRAINT ck_pipes_pipe_type") == 2
     assert "op.drop_constraint" not in source
+
+
+def test_valve_network_level_is_nullable_and_constrained():
+    table = Base.metadata.tables["valves"]
+    assert table.columns["network_level"].nullable
+    constraints = {
+        constraint.name: str(constraint.sqltext)
+        for constraint in table.constraints
+        if isinstance(constraint, CheckConstraint)
+    }
+    assert constraints["ck_valves_network_level_value"] == "network_level IS NULL OR network_level IN ('main', 'distribution', 'service')"
+
+    migration = Path(__file__).parents[1] / "alembic/versions/20260815_0018_valve_network_levels.py"
+    assert migration.read_text().count('op.f("ck_valves_network_level_value")') == 2

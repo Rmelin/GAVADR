@@ -21,6 +21,7 @@ async def seed_network():
             code="SYN-V-101",
             geometry="POINT (654940 6169210)",
             valve_type="gate",
+            network_level="distribution",
             accessibility="roadside",
         )
         pipe = Pipe(
@@ -77,6 +78,9 @@ async def test_reader_receives_wgs84_geojson_feature_collections(client):
     assert 8 < longitude < 13
     assert 54 < latitude < 58
     assert address["properties"]["street_name"] == "Gavad Byvej"
+    valve = (await client.get("/api/valves", headers={"Authorization": f"Bearer {token}"})).json()["features"][0]
+    assert valve["properties"]["valve_type"] == "gate"
+    assert valve["properties"]["network_level"] == "distribution"
 
     summary = (await client.get("/api/network-summary", headers={"Authorization": f"Bearer {token}"})).json()
     assert summary == {"active_addresses": 1, "valves": 1, "active_pipes": 1, "active_closure_areas": 1}

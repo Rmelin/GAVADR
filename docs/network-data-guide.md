@@ -97,6 +97,7 @@ Udfyld:
 |---|---|
 | `code` | Påkrævet, unikt og stabilt ID, eksempelvis `HAN-0017`. |
 | `valve_type` | Eksempelvis `gate`, `section` eller `main_stop`. |
+| `network_level` | Vælg Hovedhane (`main`), Fordelingshane (`distribution`) eller Stikhane (`service`) efter den ledning, hanen tilhører. |
 | `normal_position` | `open`, `closed` eller `unknown`. |
 | `current_position` | `open`, `closed` eller `unknown`. |
 | `status` | Normalt `operational`; anvend en aftalt driftsstatus ved fejl eller kontrolbehov. |
@@ -107,7 +108,9 @@ Udfyld:
 | `quality` | Kvaliteten af placering og attributter. |
 | `notes` | Intern bemærkning. |
 
-En hane skal have et stabilt `code`, også hvis dens placering senere korrigeres. Opret ikke en ny hane blot for at flytte et eksisterende objekt.
+En hane skal have et stabilt `code`, også hvis dens placering senere korrigeres. Opret ikke en ny hane blot for at flytte et eksisterende objekt. `valve_type` og `network_level` er to forskellige oplysninger: den første beskriver selve hanen, mens den anden beskriver dens placering i ledningsnettet.
+
+Indlæs `docs/qgis-valves.qml` på laget. Eksisterende haner uden netniveau vises som **Ikke kategoriseret** og klassificeres manuelt efter faglig kontrol; brug ikke automatisk nærmeste ledning ved kryds eller parallelle ledninger.
 
 ## 4. Opret lukkeområder
 

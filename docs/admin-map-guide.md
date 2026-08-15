@@ -35,6 +35,12 @@ Kør fra projektets rodmappe:
 
 Scriptet opretter rollen `qgis_editor`, tildeler mindst mulige GIS-rettigheder og beder interaktivt om en unik adgangskode. Adgangskoden gemmes ikke i projektet.
 
+Hvis rollen allerede findes fra en tidligere installation, kan sletteadgangen til fejltegnede lukkeområder tilføjes uden at ændre adgangskoden. Kør som databaseejer:
+
+```sql
+GRANT DELETE ON closure_areas TO qgis_editor;
+```
+
 ## 4. Opret PostgreSQL-forbindelsen i QGIS
 
 1. Åbn **Browser** i QGIS.
@@ -85,9 +91,12 @@ Se [`address-import-guide.md`](address-import-guide.md) for manuel oprettelse, C
 
 - `code`: unikt og stabilt hane-ID
 - `valve_type`: eksempelvis `gate`, `section` eller `main_stop`
+- `network_level`: `main` for hovedhane, `distribution` for fordelingshane eller `service` for stikhane
 - `normal_position`: `open`, `closed` eller `unknown`
 - `current_position`: `open`, `closed` eller `unknown`
 - `status`: eksempelvis `operational` eller `inspection_due`
+
+Indlæs `docs/qgis-valves.qml` for dansk valgliste og samme blå, orange og turkise kategorisering som ledningerne. Eksisterende haner klassificeres manuelt; `valve_type` må ikke overskrives med netniveauet.
 
 ### Ledning
 
@@ -111,6 +120,18 @@ Lukkeområder skal være `MULTIPOLYGON`. Hvis QGIS tegner en almindelig polygon,
 
 Tegn som udgangspunkt ikke-overlappende basisområder. En upstream-hane, der påvirker flere områder, registreres som et scenarie på hvert område; der tegnes ikke et ekstra samlepolygon. Ringområder registreres med et scenarie, der kræver alle relevante haner.
 
+### Ret, sammenlæg eller slet et nyt lukkeområde
+
+Ret fejl, før området kobles til adresser eller lukkescenarier:
+
+1. Slå redigering til på laget `closure_areas`.
+2. Ret en enkelt geometri med QGIS' knudeværktøj.
+3. Ved sammenlægning markeres de fejltegnede områder, hvorefter **Sammenlæg valgte objekter** vælges. Vælg attributterne fra det område, hvis navn og øvrige oplysninger skal bevares.
+4. Ved sletning markeres det fejltegnede område, og **Slet valgte objekter** vælges.
+5. Gem ændringerne, kontrollér at resultatet er en gyldig `MULTIPOLYGON`, og genindlæs webkortet.
+
+Sammenlægning flytter ikke adresse- eller scenariekoblinger til det bevarede område. Hvis et område allerede er koblet, skal relationerne først håndteres i websystemet. Databasen afviser sletningen, hvis området har været anvendt i en vandlukning.
+
 ## 7. Kobl scenarier og adresser til lukkeområder
 
 Scenarierne ligger i `closure_scenarios`, områderne i `closure_scenario_areas`, hanerne i `closure_scenario_valves`, og adresserne i `closure_area_addresses`. Ét scenarie kan påvirke flere områder, og alle dets haner skal lukkes samtidig. Scenarietabeller redigeres kun gennem websystemet. De tidligere scenarietabeller og `closure_area_valves` er kun legacy-data.
@@ -132,7 +153,7 @@ Hvis objektet ikke vises, kontrollér at det ikke har `deleted_at`, at `active` 
 1. Kør `./scripts/backup.sh` før større import eller masseændringer.
 2. Importér først få objekter og kontrollér dem i webkortet.
 3. Brug unikke objektkoder og behold dem ved senere rettelser.
-4. Slet ikke rækker fysisk. Sæt `deleted_at`, når et objekt skal udgå.
+4. Slet ikke rækker fysisk. En ny, endnu ukoblet fejltegning i `closure_areas` er den eneste undtagelse; sæt ellers `deleted_at`, når et objekt skal udgå.
 5. Registrér datakilde og datakvalitet i `source`, `quality` og `notes`.
 
 Direkte QGIS-redigering opdaterer automatisk `updated_at`. Et fuldt revisionsspor med brugerens gamle og nye geometri er endnu ikke implementeret for QGIS-redigering; webapplikationens almindelige revisionslog dækker derfor ikke disse ændringer i fase 2.

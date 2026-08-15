@@ -85,6 +85,10 @@ class Valve(NetworkEntityMixin, Base):
     __tablename__ = "valves"
     __table_args__ = (
         CheckConstraint("length(trim(code)) > 0", name="code_not_blank"),
+        CheckConstraint(
+            "network_level IS NULL OR network_level IN ('main', 'distribution', 'service')",
+            name="network_level_value",
+        ),
         CheckConstraint("normal_position IN ('open', 'closed', 'unknown')", name="normal_position_value"),
         CheckConstraint("current_position IN ('open', 'closed', 'unknown')", name="current_position_value"),
         Index("ix_valves_geometry", "geometry", postgresql_using="gist"),
@@ -93,6 +97,7 @@ class Valve(NetworkEntityMixin, Base):
     code: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     geometry: Mapped[str] = mapped_column(Geometry("POINT"))
     valve_type: Mapped[str] = mapped_column(String(50), index=True)
+    network_level: Mapped[str | None] = mapped_column(String(50), index=True)
     normal_position: Mapped[str] = mapped_column(String(10), default="open", server_default="open")
     current_position: Mapped[str] = mapped_column(String(10), default="open", server_default="open")
     status: Mapped[str] = mapped_column(String(30), default="operational", server_default="operational", index=True)

@@ -63,7 +63,8 @@ WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = :'role_name') \gexec
 SELECT format('GRANT CONNECT ON DATABASE %I TO %I', current_database(), :'role_name') \gexec
 SELECT format('GRANT USAGE ON SCHEMA public TO %I', :'role_name') \gexec
 SELECT format('GRANT SELECT ON qgis_active_valves, qgis_active_pipes, qgis_incidents, qgis_map_corrections TO %I', :'role_name') \gexec
-SELECT format('GRANT SELECT, INSERT, UPDATE ON addresses, valves, pipes, closure_areas, closure_area_addresses TO %I', :'role_name') \gexec
+SELECT format('GRANT SELECT, INSERT, UPDATE ON addresses, valves, pipes, closure_area_addresses TO %I', :'role_name') \gexec
+SELECT format('GRANT SELECT, INSERT, UPDATE, DELETE ON closure_areas TO %I', :'role_name') \gexec
 SELECT format('GRANT SELECT ON closure_scenarios, closure_scenario_areas, closure_scenario_valves, closure_area_scenarios, closure_area_scenario_valves, closure_area_valves TO %I', :'role_name') \gexec
 SELECT format('REVOKE INSERT, UPDATE ON closure_scenarios, closure_scenario_areas, closure_scenario_valves, closure_area_scenarios, closure_area_scenario_valves, closure_area_valves FROM %I', :'role_name') \gexec
 SQL

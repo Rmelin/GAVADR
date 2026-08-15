@@ -6,6 +6,8 @@ FastAPI genererer OpenAPI på `/openapi.json` og interaktiv dokumentation på `/
 
 - Fase 1: `/api/health`, `/api/auth/*` og `/api/users*`.
 - Fase 2: `/api/addresses`, `/api/valves`, `/api/pipes`, `/api/closure-areas` og `/api/map/search` som GeoJSON i EPSG:4326.
+
+Hane-features fra `GET /api/valves` indeholder både den fysiske `valve_type` og det valgfrie `network_level`: `main`, `distribution` eller `service`. En tom værdi betyder, at hanen endnu ikke er fagligt kategoriseret i QGIS.
 - Fase 3: `/api/incidents*`, opdateringer og validerede vedhæftninger.
 - Fase 4: `/api/planned-shutdowns*`, haner, beregning, adresser, informationsstatus og CSV.
 

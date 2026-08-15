@@ -11,7 +11,7 @@ import type { LayerState, MapFeature, MapLayerId, MapSearchResult, MapSelection,
 import { useAppSettings } from "../hooks/useAppSettings";
 import { useDashboardMap } from "../hooks/useDashboardMap";
 
-const initialLayers: LayerState = { closureAreas: true, mainPipes: true, distributionPipes: true, servicePipes: true, valves: true, addresses: true, plannedShutdowns: true, activeShutdowns: true, newIncidents: true, activeIncidents: true };
+const initialLayers: LayerState = { closureAreas: true, mainPipes: true, distributionPipes: true, servicePipes: true, mainValves: true, distributionValves: true, serviceValves: true, uncategorizedValves: true, addresses: true, plannedShutdowns: true, activeShutdowns: true, newIncidents: true, activeIncidents: true };
 
 export function MapPage() {
   const data = useMapData();
@@ -29,7 +29,10 @@ export function MapPage() {
   const totalFeatures = queries.reduce((total, query) => total + (query.data?.features.length ?? 0), 0);
   const counts = {
     addresses: data.addresses.data?.features.length,
-    valves: data.valves.data?.features.length,
+    mainValves: data.valves.data?.features.filter((feature) => feature.properties.network_level === "main").length,
+    distributionValves: data.valves.data?.features.filter((feature) => feature.properties.network_level === "distribution").length,
+    serviceValves: data.valves.data?.features.filter((feature) => feature.properties.network_level === "service").length,
+    uncategorizedValves: data.valves.data?.features.filter((feature) => !feature.properties.network_level).length,
     mainPipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "main").length,
     distributionPipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "distribution").length,
     servicePipes: data.pipes.data?.features.filter((feature) => feature.properties.pipe_type === "service").length,
@@ -75,7 +78,10 @@ export function MapPage() {
           <span><i className="legend-main" />Hovedforsyningsledning</span>
           <span><i className="legend-distribution" />Fordelingsledning</span>
           <span><i className="legend-service" />Stikledning</span>
-          <span><i className="legend-valve" />Hane</span>
+          <span><i className="legend-main-valve" />Hovedhane</span>
+          <span><i className="legend-distribution-valve" />Fordelingshane</span>
+          <span><i className="legend-service-valve" />Stikhane</span>
+          <span><i className="legend-uncategorized-valve" />Ikke kategoriseret hane</span>
           <span><i className="legend-address" />Adresse</span>
         </div>
       </aside>

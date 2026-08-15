@@ -1,6 +1,6 @@
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 
-export type MapLayerId = "closureAreas" | "mainPipes" | "distributionPipes" | "servicePipes" | "valves" | "addresses" | "plannedShutdowns" | "activeShutdowns" | "newIncidents" | "activeIncidents";
+export type MapLayerId = "closureAreas" | "mainPipes" | "distributionPipes" | "servicePipes" | "mainValves" | "distributionValves" | "serviceValves" | "uncategorizedValves" | "addresses" | "plannedShutdowns" | "activeShutdowns" | "newIncidents" | "activeIncidents";
 
 export type MapPropertyPrimitive = boolean | number | string | null;
 export interface ClosureScenario {
@@ -24,6 +24,8 @@ export type MapProperties = Record<string, MapPropertyValue> & {
   name?: string;
   label?: string;
   pipe_type?: string;
+  valve_type?: string;
+  network_level?: string | null;
   valve_ids?: (string | number)[];
   address_ids?: (string | number)[];
   kind?: "incident" | "shutdown";
@@ -50,7 +52,10 @@ export interface LayerState {
   mainPipes: boolean;
   distributionPipes: boolean;
   servicePipes: boolean;
-  valves: boolean;
+  mainValves: boolean;
+  distributionValves: boolean;
+  serviceValves: boolean;
+  uncategorizedValves: boolean;
   addresses: boolean;
   plannedShutdowns: boolean;
   activeShutdowns: boolean;

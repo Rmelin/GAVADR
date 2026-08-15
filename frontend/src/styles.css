@@ -331,7 +331,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .layer-swatch--mainPipes { height: 4px; background: var(--blue); border-radius: 0; }
 .layer-swatch--distributionPipes { height: 3px; background: #f59e0b; border-radius: 0; }
 .layer-swatch--servicePipes { height: 3px; background: repeating-linear-gradient(90deg, var(--aqua) 0 5px, transparent 5px 8px); border-radius: 0; }
-.layer-swatch--valves { width: .8rem; height: .8rem; background: var(--amber); border: 2px solid #4a3100; border-radius: 50%; }
+.layer-swatch--mainValves, .layer-swatch--distributionValves, .layer-swatch--serviceValves, .layer-swatch--uncategorizedValves { width: .8rem; height: .8rem; border: 2px solid; border-radius: 50%; }
+.layer-swatch--mainValves { background: #1d8cff; border-color: #083c73; }
+.layer-swatch--distributionValves { background: #f59e0b; border-color: #6b4100; }
+.layer-swatch--serviceValves { background: #54d5c6; border-color: #16645e; }
+.layer-swatch--uncategorizedValves { background: var(--amber); border-color: #4a3100; }
 .layer-swatch--addresses { width: .65rem; height: .65rem; background: #f4f8f7; border: 1px solid #16645e; border-radius: 50%; }
 .layer-swatch--plannedShutdowns, .layer-swatch--activeShutdowns, .layer-swatch--newIncidents, .layer-swatch--activeIncidents { width: .8rem; height: .8rem; border: 2px solid #fff; border-radius: 50%; }
 .layer-swatch--plannedShutdowns { background: #f4b942; }
@@ -355,7 +359,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .map-legend i { width: 1.4rem; height: 3px; background: var(--blue); }
 .map-legend .legend-distribution { background: #f59e0b; }
 .map-legend .legend-service { background: repeating-linear-gradient(90deg, var(--aqua) 0 5px, transparent 5px 8px); }
-.map-legend .legend-valve { width: .65rem; height: .65rem; margin-inline: .37rem; background: var(--amber); border: 1px solid #4a3100; border-radius: 50%; }
+.map-legend .legend-main-valve, .map-legend .legend-distribution-valve, .map-legend .legend-service-valve, .map-legend .legend-uncategorized-valve { width: .65rem; height: .65rem; margin-inline: .37rem; border: 1px solid; border-radius: 50%; }
+.map-legend .legend-main-valve { background: #1d8cff; border-color: #083c73; }
+.map-legend .legend-distribution-valve { background: #f59e0b; border-color: #6b4100; }
+.map-legend .legend-service-valve { background: #54d5c6; border-color: #16645e; }
+.map-legend .legend-uncategorized-valve { background: var(--amber); border-color: #4a3100; }
 .map-legend .legend-address { width: .55rem; height: .55rem; margin-inline: .42rem; background: white; border: 1px solid #16645e; border-radius: 50%; }
 .map-stage { position: relative; min-width: 0; min-height: 440px; overflow: hidden; background: #dce5e1; }
 .network-map-shell, .network-map { position: absolute; inset: 0; width: 100%; height: 100%; }

@@ -28,7 +28,10 @@ const layerGroups: Record<keyof LayerState, string[]> = {
   mainPipes: ["main-pipes"],
   distributionPipes: ["distribution-pipes"],
   servicePipes: ["service-pipes"],
-  valves: ["valves", "selected-valves"],
+  mainValves: ["main-valves", "selected-main-valves"],
+  distributionValves: ["distribution-valves", "selected-distribution-valves"],
+  serviceValves: ["service-valves", "selected-service-valves"],
+  uncategorizedValves: ["uncategorized-valves", "selected-uncategorized-valves"],
   addresses: ["addresses"],
   plannedShutdowns: ["planned-shutdowns"],
   activeShutdowns: ["active-shutdowns"],
@@ -50,6 +53,12 @@ const baseStyle: StyleSpecification = {
 };
 
 const selectedFilter = (ids: string[]) => ["in", ["to-string", ["coalesce", ["get", "id"], ["id"]]], ["literal", ids]] as maplibregl.FilterSpecification;
+const valveLevels = ["main", "distribution", "service"];
+const valveLayerIds = ["main-valves", "distribution-valves", "service-valves", "uncategorized-valves"];
+const valveLevelFilter = (level?: string) => (level
+  ? ["==", ["get", "network_level"], level]
+  : ["match", ["get", "network_level"], valveLevels, false, true]) as unknown as maplibregl.FilterSpecification;
+const selectedValveFilter = (ids: string[], level?: string) => ["all", selectedFilter(ids), valveLevelFilter(level)] as unknown as maplibregl.FilterSpecification;
 
 export function NetworkMap({ addresses, valves, pipes, closureAreas, operations, layers, focus, selectedValveIds = [], selectedClosureAreaIds = [], defaultLongitude = 11.45, defaultLatitude = 55.62, defaultZoom = 13, onFeatureSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -102,17 +111,23 @@ export function NetworkMap({ addresses, valves, pipes, closureAreas, operations,
         map.addLayer({ id: "distribution-pipes", type: "line", source: "pipes", filter: ["==", ["get", "pipe_type"], "distribution"], paint: { "line-color": "#f59e0b", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.9, 17, 4] } });
         map.addLayer({ id: "main-pipes", type: "line", source: "pipes", filter: ["==", ["get", "pipe_type"], "main"], paint: { "line-color": "#1d8cff", "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2.8, 17, 6] } });
         map.addLayer({ id: "addresses", type: "circle", source: "addresses", paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 2, 17, 5], "circle-color": "#f4f8f7", "circle-stroke-color": "#16645e", "circle-stroke-width": 1.5 } });
-        map.addLayer({ id: "valves", type: "circle", source: "valves", paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 4, 17, 8], "circle-color": "#f4b942", "circle-stroke-color": "#4a3100", "circle-stroke-width": 2 } });
-        map.addLayer({ id: "selected-valves", type: "circle", source: "valves", filter: selectedFilter(selectedValveIds), paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 7, 17, 12], "circle-color": "#ff6e65", "circle-stroke-color": "#ffffff", "circle-stroke-width": 3 } });
+        map.addLayer({ id: "main-valves", type: "circle", source: "valves", filter: valveLevelFilter("main"), paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 4, 17, 8], "circle-color": "#1d8cff", "circle-stroke-color": "#083c73", "circle-stroke-width": 2 } });
+        map.addLayer({ id: "distribution-valves", type: "circle", source: "valves", filter: valveLevelFilter("distribution"), paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 4, 17, 8], "circle-color": "#f59e0b", "circle-stroke-color": "#6b4100", "circle-stroke-width": 2 } });
+        map.addLayer({ id: "service-valves", type: "circle", source: "valves", filter: valveLevelFilter("service"), paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 4, 17, 8], "circle-color": "#54d5c6", "circle-stroke-color": "#16645e", "circle-stroke-width": 2 } });
+        map.addLayer({ id: "uncategorized-valves", type: "circle", source: "valves", filter: valveLevelFilter(), paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 4, 17, 8], "circle-color": "#f4b942", "circle-stroke-color": "#4a3100", "circle-stroke-width": 2 } });
+        for (const [id, level] of [["selected-main-valves", "main"], ["selected-distribution-valves", "distribution"], ["selected-service-valves", "service"], ["selected-uncategorized-valves", undefined]] as const) {
+          map.addLayer({ id, type: "circle", source: "valves", filter: selectedValveFilter(selectedValveIds, level), paint: { "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 7, 17, 12], "circle-color": "#ff6e65", "circle-stroke-color": "#ffffff", "circle-stroke-width": 3 } });
+        }
         operationalLayers.forEach((layer) => map.addLayer(layer));
 
         Object.entries(layerGroups).forEach(([group, ids]) => ids.forEach((id) => map.setLayoutProperty(id, "visibility", layers[group as keyof LayerState] ? "visible" : "none")));
-        const clickableLayers = ["closure-fill", "service-pipes", "distribution-pipes", "main-pipes", "valves", "addresses"];
+        const clickableLayers = ["closure-fill", "service-pipes", "distribution-pipes", "main-pipes", ...valveLayerIds, "addresses"];
         const selectFeature = (event: MapLayerMouseEvent) => {
           const visibleOperationalLayers = operationalLayerIds.filter((id) => map.getLayer(id));
           if (visibleOperationalLayers.length && map.queryRenderedFeatures(event.point, { layers: visibleOperationalLayers }).length) return;
           const feature = event.features?.[0];
-          if (feature) selectRef.current(feature as unknown as MapFeature, event.type === "click" && event.features?.[0]?.layer.id === "valves" ? "valve" : event.features?.[0]?.layer.id === "closure-fill" ? "closureArea" : undefined);
+          const layerId = event.features?.[0]?.layer.id;
+          if (feature) selectRef.current(feature as unknown as MapFeature, event.type === "click" && layerId && valveLayerIds.includes(layerId) ? "valve" : layerId === "closure-fill" ? "closureArea" : undefined);
         };
         clickableLayers.forEach((id) => {
           map.on("click", id, selectFeature);
@@ -163,7 +178,9 @@ export function NetworkMap({ addresses, valves, pipes, closureAreas, operations,
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    if (map.getLayer("selected-valves")) map.setFilter("selected-valves", selectedFilter(selectedValveIds));
+    for (const [id, level] of [["selected-main-valves", "main"], ["selected-distribution-valves", "distribution"], ["selected-service-valves", "service"], ["selected-uncategorized-valves", undefined]] as const) {
+      if (map.getLayer(id)) map.setFilter(id, selectedValveFilter(selectedValveIds, level));
+    }
     if (map.getLayer("selected-closure-fill")) map.setFilter("selected-closure-fill", selectedFilter(selectedClosureAreaIds));
     if (map.getLayer("selected-closure-outline")) map.setFilter("selected-closure-outline", selectedFilter(selectedClosureAreaIds));
   }, [selectedClosureAreaIds, selectedValveIds]);

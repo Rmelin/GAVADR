@@ -281,6 +281,7 @@ Forslag til felter:
 - code
 - geometry
 - valve_type
+- network_level
 - normal_position
 - current_position
 - status

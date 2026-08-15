@@ -16,11 +16,20 @@ CREATE ROLE qgis_editor LOGIN PASSWORD '<unik adgangskode>';
 GRANT CONNECT ON DATABASE gavadr TO qgis_editor;
 GRANT USAGE ON SCHEMA public TO qgis_editor;
 GRANT SELECT ON qgis_active_valves, qgis_active_pipes, qgis_incidents, qgis_map_corrections TO qgis_editor;
-GRANT SELECT, INSERT, UPDATE ON addresses, valves, pipes, closure_areas, closure_area_addresses TO qgis_editor;
+GRANT SELECT, INSERT, UPDATE ON addresses, valves, pipes, closure_area_addresses TO qgis_editor;
+GRANT SELECT, INSERT, UPDATE, DELETE ON closure_areas TO qgis_editor;
 GRANT SELECT ON closure_scenarios, closure_scenario_areas, closure_scenario_valves TO qgis_editor;
 ```
 
 Brug views til almindelig visning. Direkte tabelredigering gives kun til den kortansvarlige og logges i MVP'en via `updated_at`/`updated_by`; et fuldt database-triggerbaseret revisionsspor for QGIS er en kendt begrænsning.
+
+En eksisterende `qgis_editor` opdateres uden at ændre adgangskoden ved at køre følgende som databaseejer:
+
+```sql
+GRANT DELETE ON closure_areas TO qgis_editor;
+```
+
+`DELETE` er begrænset til lukkeområder, så nye fejltegninger kan slettes eller sammenlægges i QGIS. Brug kun fysisk sletning, før området kobles til adresser eller lukkescenarier. QGIS flytter ikke relationerne til det bevarede område ved en sammenlægning, og databasen afviser sletning af et område, der allerede indgår i en vandlukning.
 
 ## Ledningstyper og signatur
 
@@ -40,6 +49,12 @@ Brug `docs/qgis-pipes.qml` for at gøre typerne tydelige og undgå fritekst i QG
 4. Ved redigering af `pipes` vælger du nu **Hovedforsyningsledning**, **Fordelingsledning** eller **Stikledning** i formularen. QGIS gemmer automatisk `main`, `distribution` eller `service`.
 
 Stilen viser hovedforsyningsledninger som kraftige blå linjer, fordelingsledninger som orange linjer og stikledninger som tyndere turkise, stiplede linjer. Webappens tre kortlag bruger de samme værdier og kan slås til og fra hver for sig. Hvis en eksisterende ledning ikke vises i en af kategorierne, skal dens `pipe_type` rettes til en af værdierne ovenfor; opret ikke nye varianter.
+
+## Hanernes netniveau og signatur
+
+Hanens `valve_type` beskriver dens fysiske type og bevares. Feltet `network_level` beskriver, hvilken type ledning hanen hører til, med de samme værdier `main`, `distribution` og `service` som ledningerne.
+
+Indlæs `docs/qgis-valves.qml` på laget `valves` eller `qgis_active_valves` på samme måde som ledningsstilen. Stilen viser hovedhaner som blå, fordelingshaner som orange og stikhaner som turkise punkter. Feltet vælges fra en dansk liste. Eksisterende haner uden værdi vises som **Ikke kategoriseret** og skal gennemgås fagligt i QGIS; kategorien udledes ikke automatisk fra nærmeste ledning.
 
 Lukkescenarier redigeres kun på `/lukkescenarier`, hvor scenarieregistret og live-kortet validerer mindst ét område og én hane og skriver auditlog. Den globale model ligger i `closure_scenarios`, `closure_scenario_areas` og `closure_scenario_valves`. Tidligere scenario- og haneområderelationer er read-only legacy-data efter migration `20260811_0013`.
 
