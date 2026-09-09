@@ -18,11 +18,10 @@ TaskStatus = Literal["open", "in_progress", "blocked", "done", "cancelled"]
 
 class InquiryCreate(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
-    contact_name: str = Field(min_length=1, max_length=200)
+    contact_name: str | None = Field(default=None, min_length=1, max_length=200)
     contact_email: EmailStr | None = None
     contact_phone: str | None = Field(default=None, max_length=50)
-    address_id: UUID | None = None
-    address_text: str | None = Field(default=None, max_length=300)
+    address_id: UUID
     channel: InquiryChannel
     category: str = Field(min_length=1, max_length=80)
     description: str = Field(min_length=1)
@@ -39,7 +38,6 @@ class InquiryPatch(BaseModel):
     contact_email: EmailStr | None = None
     contact_phone: str | None = Field(default=None, max_length=50)
     address_id: UUID | None = None
-    address_text: str | None = Field(default=None, max_length=300)
     channel: InquiryChannel | None = None
     category: str | None = Field(default=None, min_length=1, max_length=80)
     description: str | None = Field(default=None, min_length=1)
@@ -52,7 +50,7 @@ class InquiryPatch(BaseModel):
 
     @model_validator(mode="after")
     def required_values_are_not_null(self):
-        for field in ("contact_name", "channel", "category", "description", "priority", "status"):
+        for field in ("address_id", "channel", "category", "description", "priority", "status"):
             if field in self.model_fields_set and getattr(self, field) is None:
                 raise ValueError(f"{field} cannot be null")
         return self
@@ -76,7 +74,7 @@ class InquiryUpdateResponse(BaseModel):
 class InquiryResponse(BaseModel):
     id: UUID
     number: str
-    contact_name: str
+    contact_name: str | None
     contact_email: EmailStr | None
     contact_phone: str | None
     address_id: UUID | None

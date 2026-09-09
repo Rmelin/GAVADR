@@ -25,7 +25,7 @@ export function InquiriesPage() {
     {query.data && <div className="work-list">{query.data.map((item) => <Link className="work-card" to={`/henvendelser/${item.id}`} key={item.id}>
       <div><WorkBadge tone={["critical", "high"].includes(item.priority) ? "red" : "amber"}>{inquiryPriorityLabels[item.priority]}</WorkBadge><WorkBadge>{inquiryStatusLabels[item.status]}</WorkBadge></div>
       <h2>{inquiryCategoryLabels[item.category] ?? item.category}</h2>
-      <p>{item.contact_name}{item.address_text ? ` · ${item.address_text}` : ""}</p>
+      <p>{item.address_text || "Ukendt adresse"}{item.contact_name ? ` · ${item.contact_name}` : ""}</p>
       <footer><span>{item.number}</span><span>{item.assigned_to?.display_name ?? "Ikke tildelt"}</span><time>{formatWorkDate(item.follow_up_at ?? item.created_at)}</time><b>→</b></footer>
     </Link>)}</div>}
   </div>;

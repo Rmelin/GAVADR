@@ -26,7 +26,7 @@ class Inquiry(IncidentEntityMixin, Base):
     )
 
     number: Mapped[str] = mapped_column(String(20), unique=True, index=True)
-    contact_name: Mapped[str] = mapped_column(String(200))
+    contact_name: Mapped[str | None] = mapped_column(String(200))
     contact_email: Mapped[str | None] = mapped_column(String(320))
     contact_phone: Mapped[str | None] = mapped_column(String(50))
     address_id: Mapped[UUID | None] = mapped_column(Uuid, ForeignKey("addresses.id", ondelete="SET NULL"), index=True)

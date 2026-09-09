@@ -91,7 +91,7 @@ async def test_search_finds_supported_entities_and_returns_representative_points
     token = await login(client)
     headers = {"Authorization": f"Bearer {token}"}
 
-    address_results = (await client.get("/api/map/search?q=Byvej", headers=headers)).json()
+    address_results = (await client.get("/api/map/search?q=Gavad%20Byvej%2012", headers=headers)).json()
     valve_results = (await client.get("/api/map/search?q=SYN-V-101", headers=headers)).json()
     pipe_results = (await client.get("/api/map/search?q=SYN-P", headers=headers)).json()
 

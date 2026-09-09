@@ -80,6 +80,15 @@ async def _refs(db: DbSession, address_id: UUID | None, incident_id: UUID | None
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Incident is unavailable")
 
 
+async def _active_address(db: DbSession, address_id: UUID) -> Address:
+    address = await db.scalar(select(Address).where(
+        Address.id == address_id, Address.active.is_(True), Address.deleted_at.is_(None)
+    ))
+    if not address:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Address is not active")
+    return address
+
+
 async def _number(db: DbSession, year: int) -> str:
     if db.bind and db.bind.dialect.name == "postgresql":
         await db.execute(text("SELECT pg_advisory_xact_lock(:key)"), {"key": year * 10 + 5})
@@ -128,10 +137,13 @@ async def list_inquiries(db: DbSession, user: CurrentUser,
 @router.post("", response_model=InquiryResponse, status_code=status.HTTP_201_CREATED)
 async def create_inquiry(payload: InquiryCreate, request: Request, db: DbSession, user: EditorUser) -> InquiryResponse:
     await _refs(db, payload.address_id, payload.incident_id)
+    address = await _active_address(db, payload.address_id)
     assignee = await _user_or_none(db, payload.assigned_to_id)
     now = datetime.now(timezone.utc)
     row = Inquiry(number=await _number(db, now.year), created_by=user, updated_by=user.id,
-                  assigned_to=assignee, **payload.model_dump(exclude={"assigned_to_id"}))
+                  assigned_to=assignee,
+                  address_text=f"{address.street_name} {address.house_number}, {address.postal_code} {address.city}",
+                  **payload.model_dump(exclude={"assigned_to_id"}))
     db.add(row)
     await db.flush()
     _audit(db, request, user, "create", row, {"number": row.number, "channel": row.channel,
@@ -156,12 +168,15 @@ async def patch_inquiry(inquiry_id: UUID, payload: InquiryPatch, request: Reques
     if "status" in changes:
         _transition(row.status, payload.status)
     await _refs(db, changes.get("address_id"), changes.get("incident_id"))
+    address = await _active_address(db, payload.address_id) if "address_id" in changes and payload.address_id else None
     if "assigned_to_id" in changes:
         row.assigned_to = await _user_or_none(db, payload.assigned_to_id)
         changes.pop("assigned_to_id")
     changed_fields = sorted(payload.model_fields_set)
     for field, value in changes.items():
         setattr(row, field, value)
+    if address:
+        row.address_text = f"{address.street_name} {address.house_number}, {address.postal_code} {address.city}"
     row.updated_by = user.id
     _audit(db, request, user, "update", row, {"changed_fields": changed_fields,
            "status": row.status, "assigned_to_id": str(row.assigned_to_id) if row.assigned_to_id else None})
