@@ -3,7 +3,7 @@
 ## Implementerede kontroller
 
 - Produktionsstart kræver en unik `AUTH_SECRET_KEY` på mindst 32 tegn og `AUTH_COOKIE_SECURE=true`.
-- Sessionscookie er `HttpOnly`, `Secure`, `SameSite=Strict`, tidsbegrænset og scoped til `/api`.
+- Sessionscookie er `HttpOnly`, `Secure`, `SameSite=Strict`, tidsbegrænset og scoped til `/api`. “Husk mig” giver som standard 30 dages levetid; uden valget er levetiden 30 minutter.
 - Login er rate-begrænset, adgang er rollebaseret, og væsentlige ændringer auditeres.
 - PostgreSQL og backend eksponeres ikke i produktions-Compose; webporten binder til localhost.
 - Nginx sætter CSP med `blob:` kun for MapLibre-workers, `nosniff`, frame-beskyttelse, referrer- og permissions-policy.

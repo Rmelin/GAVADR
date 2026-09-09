@@ -17,15 +17,20 @@ def verify_password(password: str, password_hash: str) -> bool:
     return password_hasher.verify(password, password_hash)
 
 
-def create_access_token(user_id: UUID) -> tuple[str, int]:
+def create_access_token(user_id: UUID, *, remember_me: bool = False) -> tuple[str, int]:
     settings = get_settings()
-    expires = datetime.now(UTC) + timedelta(minutes=settings.auth_token_minutes)
+    lifetime = (
+        timedelta(days=settings.auth_remember_days)
+        if remember_me
+        else timedelta(minutes=settings.auth_token_minutes)
+    )
+    expires = datetime.now(UTC) + lifetime
     token = jwt.encode(
         {"sub": str(user_id), "exp": expires, "iat": datetime.now(UTC), "type": "access"},
         settings.auth_secret_key,
         algorithm=settings.auth_algorithm,
     )
-    return token, settings.auth_token_minutes * 60
+    return token, int(lifetime.total_seconds())
 
 
 def decode_access_token(token: str) -> UUID:

@@ -97,6 +97,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .field label { color: var(--muted-strong); font-size: .8rem; font-weight: 700; }
 .field input { min-height: 3.2rem; padding: 0 1rem; border: 1px solid var(--line-strong); border-radius: .55rem; background: var(--bg-elevated); color: var(--text); transition: border .2s; }
 .field input:hover, .field input:focus { border-color: var(--aqua); }
+.remember-login { display: flex; align-items: center; gap: .65rem; width: fit-content; color: var(--muted-strong); font-size: .82rem; font-weight: 650; cursor: pointer; }
+.remember-login input { width: 1.05rem; height: 1.05rem; margin: 0; accent-color: var(--aqua); cursor: pointer; }
 .form-error { padding: .75rem 1rem; color: var(--red); background: color-mix(in srgb, var(--red), transparent 90%); border-left: 3px solid var(--red); border-radius: .35rem; font-size: .85rem; }
 .login-help { text-align: center; }
 .secure-note { display: flex; justify-content: center; gap: .5rem; margin-top: 1.2rem; color: var(--muted); font-size: .72rem; }
