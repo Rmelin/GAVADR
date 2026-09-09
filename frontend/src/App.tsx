@@ -33,6 +33,7 @@ const CreateTaskPage = lazy(() => import("./pages/CreateTaskPage").then((module)
 const AppSettingsPage = lazy(() => import("./pages/AppSettingsPage").then((module) => ({ default: module.AppSettingsPage })));
 const ClosureScenariosPage = lazy(() => import("./pages/ClosureScenariosPage").then((module) => ({ default: module.ClosureScenariosPage })));
 const HistoryPage = lazy(() => import("./pages/HistoryPage").then((module) => ({ default: module.HistoryPage })));
+const ActivityPage = lazy(() => import("./pages/ActivityPage").then((module) => ({ default: module.ActivityPage })));
 
 const queryClient = createQueryClient();
 const router = createBrowserRouter([
@@ -51,6 +52,7 @@ const router = createBrowserRouter([
       { path: "vandlukninger/ny", element: <Suspense fallback={<LoadingScreen />}><CreatePlannedShutdownPage /></Suspense> },
       { path: "vandlukninger/:shutdownId", element: <PlannedShutdownDetailPage /> },
       { path: "historik", element: <Suspense fallback={<LoadingScreen />}><HistoryPage /></Suspense> },
+      { element: <RoleRoute allowedRoles={["admin", "board_member"]} />, children: [{ path: "aktivitet", element: <Suspense fallback={<LoadingScreen />}><ActivityPage /></Suspense> }] },
       { path: "henvendelser", element: <InquiriesPage /> },
       { path: "henvendelser/ny", element: <Suspense fallback={<LoadingScreen />}><CreateInquiryPage /></Suspense> },
       { path: "henvendelser/:inquiryId", element: <InquiryDetailPage /> },

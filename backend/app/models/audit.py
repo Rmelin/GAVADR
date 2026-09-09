@@ -9,7 +9,10 @@ from app.db.base import Base, TimestampMixin
 
 class AuditLog(TimestampMixin, Base):
     __tablename__ = "audit_logs"
-    __table_args__ = (Index("ix_audit_logs_object", "object_type", "object_id"),)
+    __table_args__ = (
+        Index("ix_audit_logs_object", "object_type", "object_id"),
+        Index("ix_audit_logs_created_at", "created_at"),
+    )
 
     actor_user_id: Mapped[UUID | None] = mapped_column(
         Uuid, ForeignKey("users.id", ondelete="SET NULL"), index=True
