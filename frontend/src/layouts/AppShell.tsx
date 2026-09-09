@@ -17,6 +17,7 @@ const navItems: NavItem[] = [
   { label: "Events", to: "/haendelser", icon: AlertIcon },
   { label: "Vandlukninger", to: "/vandlukninger", icon: CalendarIcon },
   { label: "Historik", to: "/historik", icon: HistoryIcon },
+  { label: "Aktivitet", to: "/aktivitet", icon: HistoryIcon, roles: ["admin", "board_member"] },
   { label: "Henvendelser", to: "/henvendelser", icon: MessageIcon },
   { label: "Kortrettelser", to: "/kortrettelser", icon: ToolIcon },
   { label: "Opgaver", to: "/opgaver", icon: CheckIcon },

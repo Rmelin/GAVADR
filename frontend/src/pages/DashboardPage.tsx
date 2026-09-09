@@ -29,7 +29,7 @@ const auditObjectLabels: Record<string, string> = {
   user: "en bruger", supplier: "en leverandør", attachment: "et bilag", notification: "en besked",
 };
 
-function auditDescription(entry: AuditLogSummary) {
+export function auditDescription(entry: AuditLogSummary) {
   if (entry.action === "login") return "loggede ind";
   const object = auditObjectLabels[entry.object_type] ?? entry.object_type.replaceAll("_", " ");
   if (entry.action.includes("published")) return `offentliggjorde ${object}`;
@@ -42,7 +42,7 @@ function auditDescription(entry: AuditLogSummary) {
   return `opdaterede ${object}`;
 }
 
-function auditDetail(entry: AuditLogSummary) {
+export function auditDetail(entry: AuditLogSummary) {
   const identity = [entry.object_number, entry.object_title].filter(Boolean).join(" · ");
   if (entry.action === "planned_shutdown.published" && entry.starts_at && entry.expected_end_at) {
     const format = (value: string) => new Intl.DateTimeFormat("da-DK", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }).format(new Date(value));
@@ -51,7 +51,7 @@ function auditDetail(entry: AuditLogSummary) {
   return identity || undefined;
 }
 
-function relativeTime(value: string) {
+export function relativeTime(value: string) {
   const seconds = Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 1000));
   if (seconds < 60) return "lige nu";
   if (seconds < 3600) return `${Math.floor(seconds / 60)} min. siden`;
@@ -67,7 +67,8 @@ export function DashboardPage() {
   const corrections = useMapCorrections();
   const tasks = useTasks({ status: ["open"], mine: "true" });
   const publicFeed = usePublicFeed();
-  const auditLogs = useAuditLogs(5);
+  const canViewAudit = user?.roles.some((role) => role === "admin" || role === "board_member") ?? false;
+  const auditLogs = useAuditLogs(5, canViewAudit);
   const dashboardMap = useDashboardMap();
   const { data: appSettings } = useAppSettings();
   const firstName = user?.display_name.split(" ")[0] ?? "kollega";
@@ -101,7 +102,7 @@ export function DashboardPage() {
       </section>
       <section className="panel map-preview"><header className="panel__header"><div><span className="eyebrow">Live kort</span><h2>Aktuelt i området</h2></div><Link to="/kort"><MapIcon /> Åbn kort</Link></header><div className="dashboard-map-preview" aria-label="Kort med aktuelle vandlukninger og hændelser">{dashboardMap.isLoading && <p className="network-live-state">Henter aktuelle positioner…</p>}{dashboardMap.isError && <p className="network-live-state">Kortstatus kunne ikke hentes.</p>}{dashboardMap.data && <><Suspense fallback={<p className="network-live-state">Indlæser kort…</p>}><DashboardOperationalMap data={dashboardMap.data} defaultLongitude={appSettings.map_default_longitude} defaultLatitude={appSettings.map_default_latitude} defaultZoom={appSettings.map_default_zoom} /></Suspense><div className="dashboard-map-legend"><span><i className="is-shutdown-planned" />Planlagt vandlukning</span><span><i className="is-shutdown-active" />Aktiv vandlukning</span><span><i className="is-incident-new" />Ny hændelse</span><span><i className="is-incident-active" />Aktiv hændelse</span></div>{dashboardMap.data.features.length === 0 && <p className="dashboard-map-empty">Ingen planlagte eller aktive driftssager på kortet.</p>}</>}</div></section>
       <section className="panel tasks-panel"><header className="panel__header"><div><span className="eyebrow">Din arbejdsdag</span><h2>Mine åbne opgaver</h2></div><Link to="/opgaver">Se alle</Link></header><ul className="task-list">{tasks.isLoading&&<li>Indlæser opgaver…</li>}{!tasks.isLoading&&myTasks.length===0&&<li>Du har ingen åbne opgaver.</li>}{myTasks.slice(0,3).map(task=><li key={task.id}><span className="task-check"><CheckIcon /></span><div><Link to={`/opgaver/${task.id}`}><strong>{task.title}</strong></Link><small>Frist {formatWorkDate(task.due_date)}</small></div><span className={task.priority==="critical"?"tag tag--red":"tag"}>{taskPriorityLabels[task.priority]}</span></li>)}</ul></section>
-      <section className="panel activity-panel"><header className="panel__header"><div><span className="eyebrow">Revisionsspor</span><h2>Seneste aktivitet</h2></div><Link to="/historik">Åbn historik</Link></header><div className="activity">{auditLogs.isLoading && <p className="empty-copy">Henter seneste aktivitet…</p>}{auditLogs.isError && <p className="empty-copy">Aktiviteten kunne ikke hentes.</p>}{auditLogs.data?.length === 0 && <p className="empty-copy">Der er endnu ingen registreret aktivitet.</p>}{auditLogs.data?.map((entry, index) => <div key={entry.id}><span className={`activity-dot${index % 3 === 1 ? " activity-dot--blue" : index % 3 === 2 ? " activity-dot--amber" : ""}`} /><div className="activity-copy"><p><strong>{entry.actor_name}</strong> {auditDescription(entry)}</p>{auditDetail(entry) && <small>{auditDetail(entry)}</small>}</div><time dateTime={entry.created_at}>{relativeTime(entry.created_at)}</time></div>)}</div></section>
+      {canViewAudit && <section className="panel activity-panel"><header className="panel__header"><div><span className="eyebrow">Revisionsspor</span><h2>Seneste aktivitet</h2></div><div className="panel-header-links"><Link to="/aktivitet">Se al aktivitet</Link><Link to="/historik">Sagshistorik</Link></div></header><div className="activity">{auditLogs.isLoading && <p className="empty-copy">Henter seneste aktivitet…</p>}{auditLogs.isError && <p className="empty-copy">Aktiviteten kunne ikke hentes.</p>}{auditLogs.data?.length === 0 && <p className="empty-copy">Der er endnu ingen registreret aktivitet.</p>}{auditLogs.data?.map((entry, index) => <div key={entry.id}><span className={`activity-dot${index % 3 === 1 ? " activity-dot--blue" : index % 3 === 2 ? " activity-dot--amber" : ""}`} /><div className="activity-copy"><p><strong>{entry.actor_name}</strong> {auditDescription(entry)}</p>{auditDetail(entry) && <small>{auditDetail(entry)}</small>}</div><time dateTime={entry.created_at}>{relativeTime(entry.created_at)}</time></div>)}</div></section>}
     </div>
   </div>;
 }

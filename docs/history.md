@@ -18,3 +18,7 @@ Historikken kan afgrænses med fra- og til-dato, en eller flere aktivitetstyper 
 En vandlukning kan tilknyttes flere hændelser, og en hændelse kan tilknyttes flere vandlukninger. De relaterede sager vises fortsat og tælles hver for sig i Historik, fordi hændelsen og selve vandlukningen er to forskellige driftsfakta.
 
 CSV-eksporten bruger samme dato-, type- og stedfiltre som siden og medtager alle matchende sager, ikke kun den viste side.
+
+## Aktivitet og revisionsspor
+
+Historik er adskilt fra siden `/aktivitet`. Aktivitet viser systemets revisionsspor med bruger, handling og tidspunkt samt hver brugers seneste login. Siden og de tilhørende API-endpoints er kun tilgængelige for administratorer og bestyrelsesmedlemmer. Rå auditdata og IP-adresser vises ikke.
