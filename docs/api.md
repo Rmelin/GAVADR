@@ -27,6 +27,8 @@ Hane-features fra `GET /api/valves` indeholder både den fysiske `valve_type` og
 
 Interne endpoints accepterer den `HttpOnly`, `Secure`, `SameSite=Strict` sessionscookie. Login returnerer også `access_token` til eksisterende scripts og API-klienter, og bearer-auth understøttes fortsat. Browserkode skal bruge cookie og må ikke gemme tokenet i `localStorage` eller `sessionStorage`. Denne kompatibilitetsadgang bør genovervejes ved en versioneret API-ændring.
 
+`POST /api/auth/login` accepterer det valgfrie booleske felt `remember_me`. Når det er `true`, bruger både cookie og token den konfigurerbare levetid `AUTH_REMEMBER_DAYS` (30 dage som standard). Et udeladt eller falsk felt beholder den korte levetid på `AUTH_TOKEN_MINUTES` (30 minutter som standard).
+
 Uploads er begrænset til 10 MiB ved både Nginx og backend. Download-svar går gennem `nosniff`; klienter skal respektere serverens MIME-type og `Content-Disposition`.
 
 ## Lukkescenarier

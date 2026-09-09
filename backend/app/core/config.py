@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     auth_secret_key: str = "development-only-secret-change-me"
     auth_algorithm: str = "HS256"
     auth_token_minutes: int = 30
+    auth_remember_days: int = 30
     auth_cookie_name: str = "gavadr_session"
     auth_cookie_secure: bool = True
     login_rate_limit: int = 5

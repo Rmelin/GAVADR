@@ -10,7 +10,7 @@ export interface User {
   updated_at: string;
 }
 
-export interface LoginCredentials { email: string; password: string }
+export interface LoginCredentials { email: string; password: string; remember_me: boolean }
 
 export interface UserCreatePayload {
   email: string;

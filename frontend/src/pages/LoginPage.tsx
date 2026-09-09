@@ -9,6 +9,7 @@ import { useAppSettings } from "../hooks/useAppSettings";
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(true);
   const login = useLogin();
   const currentUser = useCurrentUser();
   const { data: appSettings } = useAppSettings();
@@ -21,7 +22,7 @@ export function LoginPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     try {
-      await login.mutateAsync({ email, password });
+      await login.mutateAsync({ email, password, remember_me: rememberMe });
       navigate(returnTo, { replace: true });
     } catch {
       // The mutation error is announced directly below the form fields.
@@ -47,6 +48,7 @@ export function LoginPage() {
           <div><span className="eyebrow">Velkommen tilbage</span><h2 id="login-title">Log ind på driftssystemet</h2><p>Brug din personlige vandværkskonto.</p></div>
           <div className="field"><label htmlFor="email">E-mail</label><input id="email" name="email" type="email" autoComplete="username" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="navn@vandvaerk.dk" /></div>
           <div className="field"><label htmlFor="password">Adgangskode</label><input id="password" name="password" type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} /></div>
+          <label className="remember-login"><input name="remember_me" type="checkbox" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} /><span>Husk mig på denne enhed</span></label>
           {errorMessage && <div className="form-error" role="alert">{errorMessage}</div>}
           <button className="primary-button" type="submit" disabled={login.isPending}>{login.isPending ? "Logger ind…" : "Log ind"}<span aria-hidden="true">→</span></button>
           <p className="login-help">Problemer med adgang? Kontakt systemadministratoren.</p>

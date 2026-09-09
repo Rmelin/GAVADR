@@ -54,7 +54,7 @@ async def login(payload: LoginRequest, request: Request, response: Response, db:
 
     attempts.pop(key, None)
     user.last_login_at = datetime.now(UTC)
-    token, expires_in = create_access_token(user.id)
+    token, expires_in = create_access_token(user.id, remember_me=payload.remember_me)
     db.add(
         AuditLog(
             actor_user_id=user.id,

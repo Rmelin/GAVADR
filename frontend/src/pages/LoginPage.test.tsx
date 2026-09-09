@@ -11,6 +11,7 @@ it("logger ind og sender brugeren til overblikket", async () => {
     if (input === "/api/auth/me") return new Response(JSON.stringify({ id: "1", email: "drift@gavad.dk", display_name: "Mette Jensen", roles: ["board_member"], is_active: true, created_at: "2026-08-07T00:00:00Z", updated_at: "2026-08-07T00:00:00Z" }), { status: 200, headers: { "Content-Type": "application/json" } });
     if (input === "/api/auth/login") {
       expect(init).toEqual(expect.objectContaining({ method: "POST", credentials: "include" }));
+      expect(JSON.parse(String(init?.body))).toEqual({ email: "drift@gavad.dk", password: "hemmelig", remember_me: true });
       authenticated = true;
       return new Response(JSON.stringify({ access_token: "token", token_type: "bearer", expires_in: 1800 }), { status: 200, headers: { "Content-Type": "application/json" } });
     }
@@ -23,6 +24,30 @@ it("logger ind og sender brugeren til overblikket", async () => {
   await user.click(screen.getByRole("button", { name: "Log ind" }));
   expect(await screen.findByRole("heading", { name: "Overblik" })).toBeInTheDocument();
   await waitFor(() => expect(fetchMock).toHaveBeenCalledWith("/api/auth/login", expect.anything()));
+  fetchMock.mockRestore();
+});
+
+it("kan fravælge at login huskes", async () => {
+  const requests: RequestInit[] = [];
+  let authenticated = false;
+  const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async (input, init) => {
+    if (input === "/api/auth/me" && !authenticated) return new Response(JSON.stringify({ detail: "Ikke logget ind" }), { status: 401, headers: { "Content-Type": "application/json" } });
+    if (input === "/api/auth/me") return new Response(JSON.stringify({ id: "1", email: "drift@gavad.dk", display_name: "Mette Jensen", roles: ["board_member"], is_active: true, created_at: "2026-08-07T00:00:00Z", updated_at: "2026-08-07T00:00:00Z" }), { status: 200, headers: { "Content-Type": "application/json" } });
+    if (input === "/api/auth/login") {
+      requests.push(init ?? {});
+      authenticated = true;
+      return new Response(JSON.stringify({ access_token: "token", token_type: "bearer", expires_in: 1800 }), { status: 200, headers: { "Content-Type": "application/json" } });
+    }
+    throw new Error(`Uventet kald: ${String(input)}`);
+  });
+  const user = userEvent.setup();
+  renderApp(<Routes><Route path="/login" element={<LoginPage />} /><Route path="/" element={<h1>Overblik</h1>} /></Routes>, ["/login"]);
+  await user.type(screen.getByLabelText("E-mail"), "drift@gavad.dk");
+  await user.type(screen.getByLabelText("Adgangskode"), "hemmelig");
+  await user.click(screen.getByRole("checkbox", { name: "Husk mig på denne enhed" }));
+  await user.click(screen.getByRole("button", { name: "Log ind" }));
+  await screen.findByRole("heading", { name: "Overblik" });
+  expect(JSON.parse(String(requests[0]?.body))).toEqual({ email: "drift@gavad.dk", password: "hemmelig", remember_me: false });
   fetchMock.mockRestore();
 });
 

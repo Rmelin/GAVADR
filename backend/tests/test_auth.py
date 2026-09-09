@@ -28,6 +28,31 @@ async def test_login_sets_http_only_cookie_and_logout_clears_it(client):
     assert "Max-Age=0" in response.headers["set-cookie"]
 
 
+async def test_remember_me_sets_thirty_day_session(client):
+    response = await client.post(
+        "/api/auth/login",
+        json={
+            "email": "admin@example.dk",
+            "password": "correct horse battery",
+            "remember_me": True,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["expires_in"] == 30 * 24 * 60 * 60
+    assert "Max-Age=2592000" in response.headers["set-cookie"]
+
+
+async def test_login_without_remember_me_keeps_short_session(client):
+    response = await client.post(
+        "/api/auth/login", json={"email": "admin@example.dk", "password": "correct horse battery"}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["expires_in"] == 30 * 60
+    assert "Max-Age=1800" in response.headers["set-cookie"]
+
+
 async def test_invalid_password_is_rejected(client):
     response = await client.post(
         "/api/auth/login", json={"email": "admin@example.dk", "password": "wrong-password"}
