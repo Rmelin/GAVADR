@@ -469,6 +469,7 @@ async def map_search(
             or_(
                 Address.street_name.ilike(term),
                 Address.house_number.ilike(term),
+                (Address.street_name + " " + Address.house_number).ilike(term),
                 Address.city.ilike(term),
                 Address.postal_code.ilike(term),
                 Address.external_address_id.ilike(term),

@@ -483,6 +483,12 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .form-section header p { margin: .45rem 0 0; color: var(--muted); font-size: .7rem; line-height: 1.5; }
 .form-fields, .coordinate-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .field--wide { grid-column: 1 / -1; }
+.single-select-field { min-width: 0; margin: 0; padding: 0; border: 0; }
+.single-select-field legend { margin-bottom: .4rem; color: var(--muted); font-size: .68rem; font-weight: 700; }
+.single-select-field__buttons { display: flex; flex-wrap: wrap; gap: .4rem; }
+.single-select-field__buttons button { min-height: 2.8rem; padding: .55rem .85rem; color: var(--muted-strong); background: var(--bg-elevated); border: 1px solid var(--line-strong); border-radius: .55rem; font: 700 .68rem Manrope; cursor: pointer; }
+.single-select-field__buttons button[aria-pressed="true"] { color: #071416; background: var(--aqua); border-color: var(--aqua); }
+.single-select-field__buttons button:focus-visible { outline: 2px solid var(--aqua); outline-offset: 2px; }
 .field input, .field select { min-height: 3rem; padding: 0 .85rem; }
 .field textarea { padding: .8rem; resize: vertical; }
 .field select, .field textarea { width: 100%; }
@@ -501,6 +507,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .address-search-results button { display: flex; flex-direction: column; width: 100%; padding: .7rem; color: var(--text); text-align: left; background: transparent; border: 0; border-radius: .4rem; cursor: pointer; }
 .address-search-results button:hover { background: var(--panel-hover); }
 .address-search-results small, .selected-address small { margin-top: .2rem; color: var(--muted); }
+.address-search-state { margin: 0; padding: .7rem; color: var(--muted); font-size: .68rem; }
 .selected-address { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: .7rem; padding: .85rem; background: color-mix(in srgb, var(--aqua), transparent 94%); border: 1px solid color-mix(in srgb, var(--aqua), transparent 65%); border-radius: .55rem; }
 .selected-address span { display: flex; flex-direction: column; }
 .selected-address button, .title-field button { padding: .3rem; color: var(--aqua); background: transparent; border: 0; font-size: .65rem; cursor: pointer; }

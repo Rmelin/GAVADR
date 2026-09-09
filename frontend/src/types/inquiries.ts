@@ -16,7 +16,7 @@ export interface InquiryUpdate {
 export interface Inquiry {
   id: string;
   number: string;
-  contact_name: string;
+  contact_name: string | null;
   contact_email: string | null;
   contact_phone: string | null;
   address_id: string | null;
@@ -38,11 +38,10 @@ export interface Inquiry {
 }
 
 export interface InquiryCreatePayload {
-  contact_name: string;
+  contact_name?: string | null;
   contact_email?: string | null;
   contact_phone?: string | null;
-  address_id?: string | null;
-  address_text?: string | null;
+  address_id: string;
   channel: InquiryChannel;
   category: string;
   description: string;

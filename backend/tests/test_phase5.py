@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.core.security import hash_password
 from app.db.session import SessionLocal
-from app.models import AuditLog, Inquiry, MapCorrection, Role, Task, User
+from app.models import Address, AuditLog, Inquiry, MapCorrection, Role, Task, User
 from tests.conftest import login
 
 
@@ -34,14 +34,27 @@ def inquiry_payload():
     }
 
 
+async def add_address() -> str:
+    async with SessionLocal() as session:
+        address = Address(
+            external_address_id="INQUIRY-ADDRESS", street_name="Main Street", house_number="1",
+            postal_code="4293", city="Dianalund", geometry="POINT (654900 6169200)",
+        )
+        session.add(address)
+        await session.commit()
+        return str(address.id)
+
+
 async def test_inquiry_crud_updates_roles_and_safe_audit(client):
     token = await login(client)
     headers = {"Authorization": f"Bearer {token}"}
-    created = await client.post("/api/inquiries", json=inquiry_payload(), headers=headers)
+    payload = inquiry_payload() | {"address_id": await add_address(), "address_text": "Must not be trusted"}
+    created = await client.post("/api/inquiries", json=payload, headers=headers)
     assert created.status_code == 201, created.text
     inquiry = created.json()
     assert inquiry["number"].endswith("-0001")
     assert inquiry["contact_email"] == "resident@example.dk"
+    assert inquiry["address_text"] == "Main Street 1, 4293 Dianalund"
 
     updated = await client.post(
         f"/api/inquiries/{inquiry['id']}/updates",
@@ -106,7 +119,9 @@ async def test_case_lists_accept_repeated_status_filters(client):
 async def test_inquiry_attachment_validation_download_auth_and_safe_audit(client):
     token = await login(client)
     headers = {"Authorization": f"Bearer {token}"}
-    inquiry = (await client.post("/api/inquiries", json=inquiry_payload(), headers=headers)).json()
+    inquiry = (await client.post(
+        "/api/inquiries", json=inquiry_payload() | {"address_id": await add_address()}, headers=headers,
+    )).json()
     rejected = await client.post(
         f"/api/inquiries/{inquiry['id']}/attachments",
         files={"file": ("fake.png", b"not an image", "image/png")}, headers=headers,
@@ -245,7 +260,7 @@ async def test_map_correction_attachment_permissions_and_db_failure_cleanup(clie
 async def test_board_can_create_correction_from_inquiry_but_cannot_transition(client):
     await add_user("board@example.dk", "board_member")
     admin = await login(client)
-    inquiry = (await client.post("/api/inquiries", json=inquiry_payload(),
+    inquiry = (await client.post("/api/inquiries", json=inquiry_payload() | {"address_id": await add_address()},
                                  headers={"Authorization": f"Bearer {admin}"})).json()
     board = await login(client, "board@example.dk")
     headers = {"Authorization": f"Bearer {board}"}
@@ -262,7 +277,9 @@ async def test_board_can_create_correction_from_inquiry_but_cannot_transition(cl
 async def test_tasks_relations_comments_and_dashboard_filters(client):
     token = await login(client)
     headers = {"Authorization": f"Bearer {token}"}
-    inquiry = (await client.post("/api/inquiries", json=inquiry_payload(), headers=headers)).json()
+    inquiry = (await client.post(
+        "/api/inquiries", json=inquiry_payload() | {"address_id": await add_address()}, headers=headers,
+    )).json()
     admin_id = next(row["id"] for row in (await client.get("/api/users/options", headers=headers)).json()
                     if row["display_name"] == "Admin")
     yesterday = str(date.today() - timedelta(days=1))
