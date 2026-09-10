@@ -15,6 +15,8 @@ interface Props {
   valves?: MapFeatureCollection;
   onChange: (longitude: number, latitude: number) => void;
   onZoomChange?: (zoom: number) => void;
+  ariaLabel?: string;
+  hint?: string;
 }
 
 const style: maplibregl.StyleSpecification = {
@@ -23,7 +25,7 @@ const style: maplibregl.StyleSpecification = {
   layers: [{ id: "osm", type: "raster", source: "osm" }],
 };
 
-export function IncidentPlacementMap({ longitude, latitude, defaultLongitude = 11.45, defaultLatitude = 55.62, defaultZoom = 13, zoom, pipes, valves, onChange, onZoomChange }: Props) {
+export function IncidentPlacementMap({ longitude, latitude, defaultLongitude = 11.45, defaultLatitude = 55.62, defaultZoom = 13, zoom, pipes, valves, onChange, onZoomChange, ariaLabel = "Kort til placering af hændelsen", hint = "Klik i kortet for at placere hændelsen" }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map>();
   const marker = useRef<maplibregl.Marker>();
@@ -87,5 +89,5 @@ export function IncidentPlacementMap({ longitude, latitude, defaultLongitude = 1
     map.current.jumpTo({ center: [longitude ?? defaultLongitude, latitude ?? defaultLatitude], zoom });
   }, [defaultLatitude, defaultLongitude, latitude, longitude, zoom]);
 
-  return <div className="incident-placement-map"><div ref={container} className="incident-placement-map__canvas" aria-label="Kort til placering af hændelsen" />{failed && <div className="map-render-error" role="alert">Kortet kunne ikke vises. Indtast koordinaterne nedenfor.</div>}<span className="incident-map-hint">Klik i kortet for at placere hændelsen</span></div>;
+  return <div className="incident-placement-map"><div ref={container} className="incident-placement-map__canvas" aria-label={ariaLabel} />{failed && <div className="map-render-error" role="alert">Kortet kunne ikke vises. Indtast koordinaterne nedenfor.</div>}<span className="incident-map-hint">{hint}</span></div>;
 }
