@@ -424,6 +424,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .scenario-membership-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }.scenario-membership-grid > section { min-width: 0; }.scenario-membership-grid fieldset { grid-template-columns: 1fr; }
 .map-prefill-note { display: flex; flex-direction: column; gap: .2rem; margin-bottom: .9rem; padding: .8rem; color: var(--text); background: color-mix(in srgb, var(--aqua), transparent 91%); border: 1px solid color-mix(in srgb, var(--aqua), transparent 65%); border-radius: .55rem; font-size: .7rem; }
 .map-prefill-note span { color: var(--muted-strong); }
+.correction-placement-error { display: block; margin-top: .55rem; }
 
 /* Incidents */
 .incidents-page, .incident-form-page, .incident-detail-page, .shutdown-page, .shutdown-form-page, .shutdown-detail-page { max-width: 1380px; margin: 0 auto; }

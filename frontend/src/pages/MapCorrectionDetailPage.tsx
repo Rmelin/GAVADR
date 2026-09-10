@@ -6,7 +6,7 @@ import { useUserOptions } from "../hooks/useIncidents";
 import { useMapCorrection, useMapCorrectionActions, useSupplierOptions } from "../hooks/useMapCorrections";
 import { validateIncidentFile } from "../incidents/fileValidation";
 import { inquiryPriorityLabels, type InquiryPriority } from "../types/inquiries";
-import { canEditCorrections, correctionStatusLabels, correctionStatuses } from "../types/mapCorrections";
+import { canEditCorrections, correctionCategoryLabels, correctionStatusLabels, correctionStatuses } from "../types/mapCorrections";
 
 export function MapCorrectionDetailPage() {
   const { correctionId = "" } = useParams();
@@ -47,7 +47,7 @@ export function MapCorrectionDetailPage() {
 
   return <div className="work-page">
     <Link className="back-link" to="/kortrettelser">← Tilbage til kortrettelser</Link>
-    <header className="incident-detail-header"><div className="badge-row"><WorkBadge tone="amber">{correctionStatusLabels[item.status]}</WorkBadge><WorkBadge>{inquiryPriorityLabels[item.priority]}</WorkBadge><span>{item.number}</span></div><h1>{item.title}</h1><p>{item.category} · senest opdateret {formatWorkDate(item.updated_at)}</p></header>
+    <header className="incident-detail-header"><div className="badge-row"><WorkBadge tone="amber">{correctionStatusLabels[item.status]}</WorkBadge><WorkBadge>{inquiryPriorityLabels[item.priority]}</WorkBadge><span>{item.number}</span></div><h1>{item.title}</h1><p>{correctionCategoryLabels[item.category] ?? item.category} · senest opdateret {formatWorkDate(item.updated_at)}</p></header>
     <ol className="workflow" aria-label="Kortrettelsens arbejdsgang">{correctionStatuses.map((status, position) => <li className={position <= index ? "is-complete" : ""} aria-current={status === item.status ? "step" : undefined} key={status}><span>{position + 1}</span>{correctionStatusLabels[status]}</li>)}</ol>
     <div className="work-detail-grid"><main>
       <section className="detail-panel"><header><span className="eyebrow">Grundlag</span><h2>Beskrivelse</h2></header><p className="incident-description">{item.description}</p></section>
